@@ -1,3 +1,5 @@
+package src;
+
 /**
  * This classes handles exceptions in the scheduler.
  * @author Jarin Thundathil
@@ -8,7 +10,7 @@ public class SchedulerException extends Exception{
      * Default constructor with simple message output
      */
     public SchedulerException() {
-        super("Scheduler Exception");
+        super("src.Scheduler Exception");
     }
 
     /**
