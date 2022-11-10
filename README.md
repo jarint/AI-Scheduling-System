@@ -5,6 +5,5 @@ This is the AI sheduling system for our CPSC433 final project. The system implem
 Jarin Thundathil  
 Zachary (Man) Koo  
 Raine Legary  
-Muhammad Talha Siddiqui  
 Gabriel Cameron  
 Christopher Lee
