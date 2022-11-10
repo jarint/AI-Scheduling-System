@@ -1,5 +1,7 @@
+package src;
+
 /**
- * Class Scheduler contains the main schedule generator.
+ * Class src.Scheduler contains the main schedule generator.
  * @author Jarin Thundathil
  */
 
@@ -13,8 +15,8 @@ public class Scheduler {
     }
 
     /**
-     * Method called by the Driver.java class to run the scheduler
-     * @param args passed from main function in Driver
+     * Method called by the src.Driver.java class to run the scheduler
+     * @param args passed from main function in src.Driver
      * @throws SchedulerException
      */
     public void start(String[] args) throws SchedulerException{
