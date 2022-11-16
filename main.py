@@ -8,9 +8,10 @@ from Scheduler import Scheduler
 
 class Main:
 
-    def main(self):
+    @staticmethod
+    def main():
         s = Scheduler()
-        s.start()
+        s.search()
 
 
 if __name__ == "__main__":

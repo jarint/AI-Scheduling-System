@@ -4,13 +4,19 @@ schedule at the end of the evaluation process.
 
 '''
 
-class Scheduler():
+from ScheduleObjects.Schedule import Schedule
+from Search.Environment import Environment
+from Parser import Parser
 
-    # Empty constructor (TODO)
+
+class Scheduler:
+
     def __init__(self) -> None:
-        pass
+        self.env: Environment = Environment()
+        self.parser: Parser = Parser(self.env)
+
     
     # start function internal methods start the search process
-    def start():
+    def search():
         # internal methods start the scheduling process
         pass

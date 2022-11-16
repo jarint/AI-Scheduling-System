@@ -6,4 +6,3 @@ Jarin Thundathil
 Zachary (Man) Koo  
 Raine Legary  
 Gabriel Cameron  
-Christopher Lee
