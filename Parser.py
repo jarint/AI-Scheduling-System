@@ -8,9 +8,11 @@ import sys
 
 from Search.Environment import Environment
 
+def parse(env: Environment):
+    Parser(env)
+
 
 class Parser:
-
     FILE_HEADINGS = [
         "Name:",
         "Game slots:",
