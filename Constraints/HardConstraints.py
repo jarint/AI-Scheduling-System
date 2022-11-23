@@ -10,7 +10,7 @@ from ScheduleObjects.Activity import Activity
 from ScheduleObjects.Schedule import Schedule
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
-from ScheduleObjects.Slot import Slot
+from ScheduleObjects.ActivitySlot import Slot
 
 
 class HardConstraints:
@@ -34,7 +34,7 @@ class HardConstraints:
         @staticmethod
         def check_practice_constraints(schedule: Schedule, practice: Practice, slot: Slot):
             pass
-        
+
         @staticmethod
         def game_max():
             pass
@@ -50,7 +50,7 @@ class HardConstraints:
         
         # Not compatible assignment
         @staticmethod
-        def not_compatible():
+        def not_compatible(activity: Activity, slot: Slot):
             pass
 
         # Partial assignment
