@@ -6,8 +6,9 @@ that can be used by the AI to generate a schedule.
 
 import sys
 import logging
-
+from pathlib import Path
 from Search.Environment import Environment
+
 
 def parse(env: Environment):
     Parser(env)
@@ -56,15 +57,13 @@ class Parser:
         self.line_str = next_line
         logging.debug("    " + str(next_line))
         return next_line
-        
-
-    def parse_id(self, id: str):
-        pass
 
         
     def __parse_commandline_args(self) -> None:
         logging.debug("__parse_commandline_args")
         args = sys.argv
+        self.__validate_args(args)
+        
         self.filename = args[1]
         (
             self.env.w_minfilled,
@@ -77,6 +76,23 @@ class Parser:
             self.env.pen_section
         ) = (int(arg) for arg in args[2:])
 
+        
+    def __validate_args(args):
+        valid = True
+
+        # Should be 10 command line arguments
+        if (len(args) != 10): valid = False
+
+        # Second argument should be a valid input filename (first is irrelevent)
+        pass
+
+        # The third argument and those thereafter should be integers
+        for arg in args[2:]:
+            if not(isinstance(arg, int)): valid = False
+
+        # If the command line arguments are invalid we raise a runtime exception for debugging purposes
+        if not(valid): raise RuntimeError("Command line arguments must contain a valid filename, four integer weights (min filled, pref, pair, sec diff), and four integer penalty values(game min, practice min, not paired, section)")
+        
 
     def __parse_file(self) -> None:
         logging.debug("__parse_file")
@@ -121,6 +137,8 @@ class Parser:
         logging.debug("  __parse_games")
         while (self.__next_line() is not None):
             line = self.line_str
+            line = line.split(' ')
+            self.env.addGame()
 
 
     def __parse_practices(self) -> None:
