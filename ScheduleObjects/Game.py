@@ -12,5 +12,4 @@ class Game(Activity):
         self.association = association
         self.age = age
         self.tier = tier
-        self.division = division
-        
+        self.division = division    
