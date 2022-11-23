@@ -125,6 +125,13 @@ class Parser:
         while (self.__next_line() is not None):
             line = self.line_str
 
+            split_line = line.split(', ')
+            day = split_line[0]
+            start_time = split_line[1]
+            gamemax = int(split_line[2])
+            gamemin = int(split_line[3])
+            self.env.Adders.addGameSlot(day, start_time, gamemax, gamemin)
+
 
     def __parse_practice_slots(self) -> None:
         logging.debug("  __parse_practice_slots")

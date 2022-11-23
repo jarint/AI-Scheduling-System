@@ -8,7 +8,7 @@ from ScheduleObjects.Slot import Slot
 
 class Environment:
 
-    # Environment data variables
+    # Input data variables
     name = ''
     GAMES = [] # All game objects loaded by the parser are stored here
     PRACTICES = [] # All Practice objects loaded by the parser are stored here
@@ -26,7 +26,8 @@ class Environment:
             Environment.name = name
 
         @staticmethod
-        def addGameSlot():
+        def addGameSlot(day: str, start_time: str, gamemax: int, gamemin: int):
+            # Environment.GAMESLOTS.append()
             pass
         
         @staticmethod
@@ -34,8 +35,8 @@ class Environment:
             pass
         
         @staticmethod
-        def addGame():
-            pass
+        def addGame(id: str, age: str, tier: str, division: int):
+            Environment.GAMES.append(Game(id, age, tier, division))
 
         @staticmethod
         def addPractice():
