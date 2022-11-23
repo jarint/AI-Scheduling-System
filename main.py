@@ -6,16 +6,21 @@ This is the driver class. It creates a scheduler object and accepts
 import logging
 
 from Scheduler import Scheduler
+from Search.Environment import Environment
 
 
 class Main:
 
     @staticmethod
     def main():
-        Main.clear_log()
-        logging.basicConfig(filename='program_log.log', encoding='utf-8', level=logging.DEBUG)
-        s = Scheduler()
-        s.search()
+        # Main.clear_log()
+        # logging.basicConfig(filename='program_log.log', encoding='utf-8', level=logging.DEBUG)
+        # s = Scheduler()
+        # s.search()
+
+        env = Environment()
+        env.Adders.updateName("Example name")
+        print(env.name) 
 
     
     @staticmethod
