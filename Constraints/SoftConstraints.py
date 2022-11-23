@@ -8,7 +8,7 @@ from ScheduleObjects.Activity import Activity
 from ScheduleObjects.Schedule import Schedule
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
-from ScheduleObjects.Slot import Slot
+from ScheduleObjects.ActivitySlot import Slot
 
 class SoftConstraints:
 

@@ -4,7 +4,7 @@ This class represents the environment which will store things like user input an
 
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
-from ScheduleObjects.Slot import Slot
+from ScheduleObjects.ActivitySlot import Slot
 
 class Environment:
 
