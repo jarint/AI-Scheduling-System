@@ -6,6 +6,7 @@ that can be used by the AI to generate a schedule.
 
 import sys
 import logging
+from os.path import exists
 from Search.Environment import Environment
 
 
@@ -80,10 +81,10 @@ class Parser:
         valid = True
 
         # Should be 10 command line arguments
-        if (len(args) != 10): valid = False
+        if len(args) != 10: valid = False
 
         # Second argument should be a valid input filename (first is irrelevent)
-        pass
+        if not(exists(args[1])): valid = False
 
         # The third argument and those thereafter should be integers
         for arg in args[2:]:
