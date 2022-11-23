@@ -64,17 +64,22 @@ class HardConstraints:
             pass
 
     class CityConstraints:
+        @staticmethod
         def check_city_constraints():
             pass
 
+        @staticmethod
         def evening_slot_constraint():
             pass
 
+        @staticmethod
         def age_group_constraint():
             pass
-
+        
+        @staticmethod
         def meeting_constraint():
             pass
-
+        
+        @staticmethod
         def special_game_constraint():
             pass
