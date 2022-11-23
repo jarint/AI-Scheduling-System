@@ -6,19 +6,25 @@ If the schedule does not pass hard constraints, it will deleted, never having be
 
 # Constraint checks will take as input a current schedule and a new game or practice slot assignment to make.
 
+from ScheduleObjects.Activity import Activity
 from ScheduleObjects.Schedule import Schedule
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
 from ScheduleObjects.Slot import Slot
 
 
-class HardConstraint:
+class HardConstraints:
     @staticmethod
-    def check_constraints():
-        # if (game): check_game_constraints()
-        # else: check_practice_constraints
-        # check_city_constraints
-        pass
+    def check_constraints(schedule: Schedule, activity: Activity, slot: Slot):
+        passes = True
+        if (isinstance(activity, Game)):
+            passes = passes and HardConstraints.GeneralConstraints.check_game_constraints()
+        elif (isinstance(activity, Practice)):
+            passes = passes and HardConstraints.GeneralConstraints.check_practice_constraints()
+        else:
+            raise TypeError("Activity given to 'check_constraints method must be either of type 'Game' or type 'Practice'")
+        passes = passes and HardConstraints.CityConstraints.check_city_constraints()
+        return passes
 
     class GeneralConstraints:
         @staticmethod
@@ -59,4 +65,16 @@ class HardConstraint:
 
     class CityConstraints:
         def check_city_constraints():
+            pass
+
+        def evening_slot_constraint():
+            pass
+
+        def age_group_constraint():
+            pass
+
+        def meeting_constraint():
+            pass
+
+        def special_game_constraint():
             pass
