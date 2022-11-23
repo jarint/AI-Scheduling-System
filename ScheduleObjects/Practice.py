@@ -32,3 +32,9 @@ class Practice(Activity):
     
     def __getPrac(self):
         return self.prac
+        self.association = association
+        self.age = age
+        if tier == '': self.tier = None
+        self.division = division
+        self.team_num = team_num
+        
