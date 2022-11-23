@@ -32,4 +32,3 @@ class Practice(Activity):
     
     def __getPrac(self):
         return self.prac
-        
