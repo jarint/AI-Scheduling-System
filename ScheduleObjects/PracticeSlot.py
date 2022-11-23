@@ -1,5 +1,4 @@
 
-
 from ScheduleObjects.Activity import Activity
 from ScheduleObjects.ActivitySlot import ActivitySlot
 
