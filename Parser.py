@@ -76,7 +76,7 @@ class Parser:
         ) = (int(arg) for arg in args[2:])
 
         
-    def __validate_args(args):
+    def __validate_args(self, args):
         valid = True
 
         # Should be 10 command line arguments
