@@ -14,4 +14,3 @@ class Practice(Activity):
         if tier == '': self.tier = None
         self.division = division
         self.team_num = team_num
-        
