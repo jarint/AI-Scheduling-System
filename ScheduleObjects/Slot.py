@@ -4,7 +4,7 @@ corresponding to games and practices, which will both have attributes of this cl
 
 '''
 
-from ScheduleObjects.Activity import Activity
+from Activity import Activity
 
 class Slot:
     activities = []
