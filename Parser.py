@@ -5,6 +5,7 @@ that can be used by the AI to generate a schedule.
 '''
 
 import sys
+import logging
 
 from Search.Environment import Environment
 
@@ -50,18 +51,19 @@ class Parser:
             return None # end of section
 
         self.current_line += 1
-        self.line_str = next_line  
+        self.line_str = next_line
+        logging.debug("    " + str(next_line))
         return next_line
         
 
-    
     def parse_id(self, id: str):
         pass
 
         
     def __parse_commandline_args(self) -> None:
+        logging.debug("__parse_commandline_args")
         args = sys.argv
-        self.filename = args[0]
+        self.filename = args[1]
         (
             self.env.w_minfilled,
             self.env.w_pref,
@@ -71,10 +73,11 @@ class Parser:
             self.env.pen_practicemin, 
             self.env.pen_notpaired, 
             self.env.pen_section
-        ) = (int(arg) for arg in args[1:])
+        ) = (int(arg) for arg in args[2:])
 
 
     def __parse_file(self) -> None:
+        logging.debug("__parse_file")
         with open(self.filename, "r") as fh:
             self.file_contents = fh.readlines()
             self.num_lines = len(self.file_contents)
@@ -95,51 +98,61 @@ class Parser:
 
 
     def __parse_name(self) -> None:
+        logging.debug("  __parse_name")
         while (self.__next_line() is not None):
             line = self.line_str
 
 
     def __parse_game_slots(self) -> None:
+        logging.debug("  __parse_game_slots")
         while (self.__next_line() is not None):
             line = self.line_str
 
 
     def __parse_practice_slots(self) -> None:
+        logging.debug("  __parse_practice_slots")
         while (self.__next_line() is not None):
             line = self.line_str
 
 
     def __parse_games(self) -> None:
+        logging.debug("  __parse_games")
         while (self.__next_line() is not None):
             line = self.line_str
 
 
     def __parse_practices(self) -> None:
+        logging.debug("  __parse_practices")
         while (self.__next_line() is not None):
             line = self.line_str
 
 
     def __parse_not_compatible(self) -> None:
+        logging.debug("  __parse_not_compatible")
         while (self.__next_line() is not None):
             line = self.line_str
 
 
     def __parse_unwanted(self) -> None:
+        logging.debug("  __parse_unwanted")
         while (self.__next_line() is not None):
             line = self.line_str
 
 
     def __parse_preferences(self) -> None:
+        logging.debug("  __parse_preferences")
         while (self.__next_line() is not None):
             line = self.line_str
 
 
     def __parse_pairs(self) -> None:
+        logging.debug("  __parse_pairs")
         while (self.__next_line() is not None):
             line = self.line_str
 
 
     def __parse_partial_assignments(self) -> None:
+        logging.debug("  __parse_partial_assignments")
         while (self.__next_line() is not None):
             line = self.line_str
     
