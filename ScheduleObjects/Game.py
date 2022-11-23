@@ -11,6 +11,5 @@ class Game(Activity):
         self.id = id
         self.association = association
         self.age = age
-        self.tier = tier
+        if tier == '': self.tier = None
         self.division = division
-        
