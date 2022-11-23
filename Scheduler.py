@@ -17,6 +17,7 @@ class Scheduler:
 
     
     # start function internal methods start the search process
-    def search():
+    def search(self):
         # internal methods start the scheduling process
         pass
+
