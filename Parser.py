@@ -6,7 +6,6 @@ that can be used by the AI to generate a schedule.
 
 import sys
 import logging
-from pathlib import Path
 from Search.Environment import Environment
 
 
