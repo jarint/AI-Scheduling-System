@@ -33,10 +33,28 @@ class SoftConstraints:
         def check_practice_constraints(schedule: Schedule, practice: Practice, slot: Slot):
             pass
 
-    class CityConstraints:
-        def check_city_constraint():
+        @staticmethod
+        def game_min():
             pass
 
+        @staticmethod
+        def practice_min():
+            pass
+
+        @staticmethod
+        def preference():
+            pass
+
+        @staticmethod
+        def pair():
+            pass
+
+    class CityConstraints:
+        @staticmethod
+        def check_city_constraint():
+            pass
+        
+        @staticmethod
         def age_tier_constraint():
             pass
     
