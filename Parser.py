@@ -135,9 +135,25 @@ class Parser:
     def __parse_games(self) -> None:
         logging.debug("  __parse_games")
         while (self.__next_line() is not None):
+            # This is the game identifier
             line = self.line_str
-            line = line.split(' ')
-            self.env.addGame()
+
+            # Parsing (splitting) game identifier (should be four resulting strings)
+            split_line = line.split(' ')
+            if len(split_line) != 4: raise RuntimeError("Issue parsing game '" + line + "': split does not result in four elements")
+
+            id = line
+            association = split_line[0]
+            division = int(split_line[3])
+
+            # Parsing age and tier
+            age_tier = split_line[1].split('T')
+            age = age_tier[0]
+            if len(age_tier) == 2: tier = 'T' + age_tier[1]
+            else: tier = None
+
+            # Adding game to environment
+            self.env.Adders.addGame(id, association, age, tier, division)
 
 
     def __parse_practices(self) -> None:
