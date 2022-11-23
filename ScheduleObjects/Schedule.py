@@ -12,7 +12,7 @@ from Practice import Practice
 class Schedule:
 
     # Empty constructor (TODO)
-    def __init__(self, mwf_g: list[Slot], tr_g: list[Slot], mw_p: list[Slot], tr_p: list[Slot], f_p: list[Slot]) -> None:
+    def __init__(self, mwf_g: list(Slot), tr_g: list(Slot), mw_p: list(Slot), tr_p: list(Slot), f_p: list(Slot)) -> None:
         self.mwf_g = mwf_g
         self.tr_g = tr_g
         self.mw_p = mw_p
