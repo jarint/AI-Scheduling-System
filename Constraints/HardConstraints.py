@@ -52,8 +52,8 @@ class HardConstraints:
         @staticmethod
         def not_compatible(id: str, slot: list):
             # id is the id of the activity being added and slot is the list of activity ids for the slot that id is being added to
-            for act in slot:
-                if id == act: return False
+            for activity_id in slot:
+                if id == activity_id: return False
 
         # Partial assignment
         @staticmethod
