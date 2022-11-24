@@ -7,6 +7,7 @@ that can be used by the AI to generate a schedule.
 import sys
 import logging
 import os
+import re
 
 from Search.Environment import Environment
 from Enumerations import ActivityType
@@ -59,7 +60,7 @@ class Parser:
             return None # end of section
 
         self.current_line += 1
-        self.line_str = next_line
+        self.line_str = next_line.strip()
         logging.debug("    " + str(next_line.strip()))
         return next_line
 
@@ -135,7 +136,7 @@ class Parser:
         while (self.__next_line() is not None):
             line = self.line_str
 
-            split_line = line.split(self.COMMA_REGEX)
+            split_line = re.split(self.COMMA_REGEX, line)
             day = split_line[0]
             start_time = split_line[1]
             gamemax = int(split_line[2])

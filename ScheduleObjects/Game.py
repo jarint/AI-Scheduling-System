@@ -16,7 +16,7 @@ class Game(Activity):
         self.age = age
         self.tier = tier
         self.division = division
-
+        
 
     def get_id(self):
         return self.id
