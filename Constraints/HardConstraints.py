@@ -10,12 +10,12 @@ from ScheduleObjects.Activity import Activity
 from ScheduleObjects.Schedule import Schedule
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
-from ScheduleObjects.ActivitySlot import Slot
+from ScheduleObjects.ActivitySlot import ActivitySlot
 
 
 class HardConstraints:
     @staticmethod
-    def check_constraints(schedule: Schedule, activity: Activity, slot: Slot):
+    def check_constraints(schedule: Schedule, activity: Activity, slot: ActivitySlot):
         passes = True
         if (isinstance(activity, Game)):
             passes = passes and HardConstraints.GeneralConstraints.check_game_constraints()
@@ -28,11 +28,11 @@ class HardConstraints:
 
     class GeneralConstraints:
         @staticmethod
-        def check_game_constraints(schedule: Schedule, game: Game, slot: Slot):
+        def check_game_constraints(schedule: Schedule, game: Game, slot: ActivitySlot):
             pass
 
         @staticmethod
-        def check_practice_constraints(schedule: Schedule, practice: Practice, slot: Slot):
+        def check_practice_constraints(schedule: Schedule, practice: Practice, slot: ActivitySlot):
             pass
 
         @staticmethod
@@ -50,8 +50,10 @@ class HardConstraints:
         
         # Not compatible assignment
         @staticmethod
-        def not_compatible(activity: Activity, slot: Slot):
-            pass
+        def not_compatible(id: str, slot: list):
+            # id is the id of the activity being added and slot is the list of activity ids for the slot that id is being added to
+            for act in slot:
+                if id == act: return False
 
         # Partial assignment
         @staticmethod
