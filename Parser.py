@@ -141,7 +141,7 @@ class Parser:
             start_time = split_line[1]
             gamemax = int(split_line[2])
             gamemin = int(split_line[3])
-            self.env.Adders.add_game_slot(day, start_time, gamemax, gamemin)
+            # self.env.Adders.add_game_slot(day, start_time, gamemax, gamemin)
 
 
     def __parse_practice_slots(self) -> None:
