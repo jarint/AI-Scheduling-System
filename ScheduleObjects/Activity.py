@@ -6,6 +6,12 @@ from abc import ABC, abstractmethod
 
 
 class Activity(ABC):
+
+    ACTIVITY_TYPE = None
+
     '''
     abstract class; no constructor needed.
     '''
+
+
+

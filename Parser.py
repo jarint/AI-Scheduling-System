@@ -6,8 +6,10 @@ that can be used by the AI to generate a schedule.
 
 import sys
 import logging
-from os.path import exists
+import os
+
 from Search.Environment import Environment
+from Enumerations import ActivityType
 
 
 def parse(env: Environment):
@@ -29,6 +31,9 @@ class Parser:
 
         "LAST_HEADING_ENTRY"
     ]
+
+
+    COMMA_REGEX = r"\s*,\s*"
 
 
     def __init__(self, env: Environment) -> None:
@@ -55,7 +60,7 @@ class Parser:
 
         self.current_line += 1
         self.line_str = next_line
-        logging.debug("    " + str(next_line))
+        logging.debug("    " + str(next_line.strip()))
         return next_line
 
         
@@ -84,15 +89,19 @@ class Parser:
         if len(args) != 10: valid = False
 
         # Second argument should be a valid input filename (first is irrelevent)
-        if not(exists(args[1])): valid = False
+        if not(os.path.exists(args[1])): valid = False
 
         # The third argument and those thereafter should be integers
         for arg in args[2:]:
-            if not(isinstance(arg, int)): valid = False
+            try:
+                int(arg)
+            except ValueError:
+                valid = False
 
         # If the command line arguments are invalid we raise a runtime exception for debugging purposes
         if not(valid): raise RuntimeError("Command line arguments must contain a valid filename, four integer weights (min filled, pref, pair, sec diff), and four integer penalty values(game min, practice min, not paired, section)")
-        
+    
+    # <file parsing methods>
 
     def __parse_file(self) -> None:
         logging.debug("__parse_file")
@@ -126,12 +135,12 @@ class Parser:
         while (self.__next_line() is not None):
             line = self.line_str
 
-            split_line = line.split(', ')
+            split_line = line.split(self.COMMA_REGEX)
             day = split_line[0]
             start_time = split_line[1]
             gamemax = int(split_line[2])
             gamemin = int(split_line[3])
-            self.env.Adders.addGameSlot(day, start_time, gamemax, gamemin)
+            self.env.Adders.add_game_slot(day, start_time, gamemax, gamemin)
 
 
     def __parse_practice_slots(self) -> None:
@@ -161,7 +170,7 @@ class Parser:
             else: tier = None
 
             # Adding game to environment
-            self.env.Adders.addGame(id, association, age, tier, division)
+            self.env.Adders.add_game(id, association, age, tier, division)
 
 
     def __parse_practices(self) -> None:
@@ -186,6 +195,7 @@ class Parser:
         logging.debug("  __parse_preferences")
         while (self.__next_line() is not None):
             line = self.line_str
+            split_line = line.split(self.COMMA_REGEX)
 
 
     def __parse_pairs(self) -> None:
@@ -198,6 +208,24 @@ class Parser:
         logging.debug("  __parse_partial_assignments")
         while (self.__next_line() is not None):
             line = self.line_str
+
+
+    # </file parsing methods>
+
+
+    def __parse_activity_id(self, activity_id: str) -> None:
+        activity_type = self.__decide_activity_type(activity_id)
+        if activity_type == ActivityType.GAME:
+            pass
+        elif activity_type == ActivityType.PRACTICE:
+            pass
+        else:
+            pass
+
+    
+    def __decide_activity_type(self, activity_id: str) -> str:
+        # TODO
+        return ActivityType.GAME
     
 
     

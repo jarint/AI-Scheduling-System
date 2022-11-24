@@ -1,21 +1,25 @@
 
 from ScheduleObjects.Activity import Activity
+from Enumerations import ActivityType, Weekday
 from ScheduleObjects.ActivitySlot import ActivitySlot
 
 class GameSlot(ActivitySlot):
-    def __init__(self, slot_num: int, days: str, start_time: str, length: str, evening_slot: bool):
-        self.id = (days, slot_num)
-        self.slot_num = slot_num
-        self.days = days
+
+    ACTIVITY_TYPE = ActivityType.GAME
+
+    def __init__(self, weekday: Weekday, time_str: str, start_time: str, duration: str, is_evening_slot: bool):
+        self.weekday = weekday
+        self.time_str = time_str
+        self.id = (self.ACTIVITY_TYPE, weekday, time_str)
+
         self.start_time = start_time
-        self.end_time = start_time + length
-        self.length = length
-        self.evening_slot = evening_slot
+        self.end_time = start_time + duration
+        self.duration = duration
+        self.is_evening_slot = is_evening_slot
+
         self.overlaps = []
         self.__update_overlaps()
-
-    def get_activities(self):
-        return self.activities
     
+
     def __update_overlaps():
         pass
