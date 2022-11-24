@@ -4,10 +4,11 @@ This is the driver class. It creates a scheduler object and accepts
 '''
 
 import logging
+
 from Scheduler import Scheduler
-from Search.Environment import Environment
 
 class Main:
+
     @staticmethod
     def main():
         Main.clear_log()

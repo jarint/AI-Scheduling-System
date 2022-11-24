@@ -3,9 +3,12 @@ This class is used to represent a practice that can be placed somewhere in the s
 '''
 
 from ScheduleObjects.Activity import Activity
+from Enumerations import ActivityType
 
 
 class Practice(Activity):
+
+    ACTIVITY_TYPE = ActivityType.PRACTICE
 
     def __init__(self, id: str, division: int, association: str, age: str, tier: str, prac: str):
         self.id = id
@@ -15,20 +18,22 @@ class Practice(Activity):
         self.division = division 
         self.prac = prac
     
-    def __getID(self):
+
+    def get_id(self):
         return self.id
     
-    def __getDivision(self):
-        return self.division
-    
-    def __getAssociation(self):
+
+    def get_association(self):
         return self.association
-    
-    def __getAge(self):
+
+
+    def get_age(self):
         return self.age
-    
-    def __getTier(self):
+
+
+    def get_tier(self):
         return self.tier
-    
-    def __getPrac(self):
-        return self.prac
+
+
+    def get_division(self):
+        return self.division
