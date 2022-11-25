@@ -2,6 +2,7 @@
 This class represents the environment which will store things like user input and search parameters.
 '''
 
+from Enumerations import ActivityType, Weekday
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
 from ScheduleObjects.GameSlot import GameSlot
@@ -25,6 +26,7 @@ class Environment:
     PARTASSIGN = [] # Hard Constraint. To be scheduled immediately. List of 2-tuples whose first entry is an activity id
         # and whose second entry is a slot id
 
+
     class Adders:
 
         @staticmethod
@@ -35,7 +37,6 @@ class Environment:
         @staticmethod
         def add_game_slot(game_slot: GameSlot):
             Environment.GAME_SLOT_ID_TO_OBJ[game_slot.id] = game_slot
-            pass
         
 
         @staticmethod
@@ -64,15 +65,20 @@ class Environment:
 
 
         @staticmethod
-        def add_preference():
-            pass
+        def add_preference(preference: "tuple[tuple[ActivityType, Weekday, str], str, int]"):
+            slot_id, activity_id, pref_value = preference
+            Environment.PREFERENCES[slot_id, activity_id] = pref_value
 
 
         @staticmethod
-        def add_pair():
-            pass
+        def add_pair(pair: "tuple[str, str]"):
+            activity_a, activity_b = pair
+            Environment.PAIR[activity_a] = Environment.PAIR[activity_a].union(Environment.PAIR[activity_b])
+            Environment.PAIR[activity_b] = Environment.PAIR[activity_b].union(Environment.PAIR[activity_a])
+            Environment.PAIR[activity_a].add(activity_b)
+            Environment.PAIR[activity_b].add(activity_a)
         
 
         @staticmethod
-        def add_partassign():
-            pass
+        def add_partassign(partassign: "tuple[str, str]"):
+            Environment.Adders.add_partassign(partassign)

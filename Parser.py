@@ -185,7 +185,7 @@ class Parser:
             line = self.line_str
             preference = self.__parse_preference(line)
             slot_id, activity_id, pref_value = preference
-            self.env.PREFERENCES[slot_id, activity_id] = pref_value
+            self.env.Adders.add_preference(preference)
         
         # assign default value of 0 if unspecified
         for slot_id in self.env.GAME_SLOT_ID_TO_OBJ | self.env.PRACTICE_SLOT_ID_TO_OBJ:
@@ -201,12 +201,9 @@ class Parser:
 
         while (self.__next_line() is not None):
             line = self.line_str
-            activity_a, activity_b = re.split(self.COMMA_REGEX, line)
-            self.env.PAIR[activity_a] = self.env.PAIR[activity_a].union(self.env.PAIR[activity_b])
-            self.env.PAIR[activity_b] = self.env.PAIR[activity_b].union(self.env.PAIR[activity_a])
-            self.env.PAIR[activity_a].add(activity_b)
-            self.env.PAIR[activity_b].add(activity_a)
-
+            pair = re.split(self.COMMA_REGEX, line)
+            self.env.Adders.add_pair(pair)
+            
 
     def __parse_partial_assignments(self) -> None:
         logging.debug("  __parse_partial_assignments")
@@ -218,8 +215,7 @@ class Parser:
             weekday = EnumValueToObjMaps.WEEKDAYS[itemized[1]]
             time_str = itemized[2]
             slot_id = (activity_type, weekday, time_str)
-            self.env.PARTASSIGN.append((activity_id, slot_id))
-            
+            self.env.Adders.add_partassign((activity_id, slot_id))
 
 
     # </file parsing methods>
@@ -294,11 +290,12 @@ class Parser:
         pass
 
     
-    def __decide_activity_type(self, activity_id: str) -> ActivityType:
-        if ("PRC" in activity_id or "OPN" in activity_id):
-            return ActivityType.PRACTICE
-        else:
-            return ActivityType.GAME
+    def decide_activity_type(self, activity_id: str) -> ActivityType:
+        for phrase in ["PRC", "OPN", "CMSA U12T1S", "CMSA U13T1S"]:
+            if phrase in activity_id:
+                return ActivityType.PRACTICE
+        
+        return ActivityType.GAME
 
 
     def __parse_preference(self, preference_str: str) -> "tuple[tuple[ActivityType, Weekday, str], str, int]":
