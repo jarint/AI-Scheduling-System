@@ -12,6 +12,7 @@ class Schedule:
 
     def __init__(self) -> None:
         self.__initialize_schedule_dicts()
+        # create remaining_games and remaining_practices lists
 
     
     def get_activities_in_slot(self, slot_id: "tuple[ActivityType, Weekday, str]") -> "set[str]":
