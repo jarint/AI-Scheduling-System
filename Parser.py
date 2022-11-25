@@ -183,38 +183,64 @@ class Parser:
         logging.debug("  __parse_preferences")
         while (self.__next_line() is not None):
             line = self.line_str
-            split_line = line.split(self.COMMA_REGEX)
+            preference = self.__parse_preference(line)
+            slot_id, activity_id, pref_value = preference
+            self.env.PREFERENCES[slot_id, activity_id] = pref_value
+        
+        # assign default value of 0 if unspecified
+        for slot_id in self.env.GAME_SLOT_ID_TO_OBJ | self.env.PRACTICE_SLOT_ID_TO_OBJ:
+            for activity_id in self.env.GAME_ID_TO_OBJ | self.env.PRACTICE_ID_TO_OBJ:
+                if (slot_id, activity_id) not in self.env.PREFERENCES:
+                    self.env.PREFERENCES[(slot_id, activity_id)] = 0
 
 
     def __parse_pairs(self) -> None:
         logging.debug("  __parse_pairs")
+        for activity_id in self.env.GAME_ID_TO_OBJ | self.env.PRACTICE_ID_TO_OBJ:
+            self.env.PAIR[activity_id] = set()
+
         while (self.__next_line() is not None):
             line = self.line_str
+            activity_a, activity_b = re.split(self.COMMA_REGEX, line)
+            self.env.PAIR[activity_a] = self.env.PAIR[activity_a].union(self.env.PAIR[activity_b])
+            self.env.PAIR[activity_b] = self.env.PAIR[activity_b].union(self.env.PAIR[activity_a])
+            self.env.PAIR[activity_a].add(activity_b)
+            self.env.PAIR[activity_b].add(activity_a)
 
 
     def __parse_partial_assignments(self) -> None:
         logging.debug("  __parse_partial_assignments")
         while (self.__next_line() is not None):
             line = self.line_str
+            itemized = re.split(self.COMMA_REGEX, line)
+            activity_id = itemized[0]
+            activity_type = self.__decide_activity_type(itemized[0])
+            weekday = EnumValueToObjMaps.WEEKDAYS[itemized[1]]
+            time_str = itemized[2]
+            slot_id = (activity_type, weekday, time_str)
+            self.env.PARTASSIGN.append((activity_id, slot_id))
+            
 
 
     # </file parsing methods>
 
+    
+    # <lower level parsing helpers>
+
 
     def __time_str_to_int(self, time_str: str) -> int:
-        accepted = True
         try:
             hours, mins = (int(e) for e in time_str.strip().split(":"))
         except ValueError:
-            accepted = False
-        except IndexError:
-            accepted = False
-        if not accepted:
-            raise ValueError("improper time string format")
-
-        return hours * 60 + mins
+            raise ValueError(f"invalid time string: {time_str}")
             
+        return hours * 60 + mins
 
+
+    def __decide_if_evening_slot(self, time_str: str) -> bool:
+        time_int = self.__time_str_to_int(time_str)
+        return time_int >= 1080 # 18:00 - 18 * 60 = 1080
+            
 
     def __parse_activity_id(self, activity_id: str) -> None:
         activity_type = self.__decide_activity_type(activity_id)
@@ -244,6 +270,7 @@ class Parser:
 
 
     def __parse_practice_id(self, practice_id: str) -> Practice:
+        # return Practice("id", 0, "assoc", 0, "tier", "prac")
         pass
 
 
@@ -258,20 +285,36 @@ class Parser:
         start_time = split_line[1]
         gamemax = int(split_line[2])
         gamemin = int(split_line[3])
+        is_evening_slot = self.__decide_if_evening_slot(start_time)
 
-        game_slot = GameSlot(weekday, start_time, gamemax, gamemin)
+        return GameSlot(weekday, start_time, gamemax, gamemin, is_evening_slot)
 
 
     def __parse_practice_slot(self, practice_slot_name: str) -> PracticeSlot:
         pass
 
     
-    def __decide_activity_type(self, activity_id: str) -> str:
+    def __decide_activity_type(self, activity_id: str) -> ActivityType:
         if ("PRC" in activity_id or "OPN" in activity_id):
             return ActivityType.PRACTICE
         else:
             return ActivityType.GAME
-    
 
-    
-    
+
+    def __parse_preference(self, preference_str: str) -> "tuple[tuple[ActivityType, Weekday, str], str, int]":
+        try:
+            itemized = re.split(self.COMMA_REGEX, preference_str)
+            activity_type = self.__decide_activity_type(itemized[2])
+            weekday = EnumValueToObjMaps.WEEKDAYS[itemized[0]]
+            start_time = itemized[1]
+            slot_id = (activity_type, weekday, start_time)
+            activity_id = itemized[2]
+            pref_value = int(itemized[3])
+        except ValueError:
+            raise ValueError(f"invalid preference string {preference_str}")
+
+        return (slot_id, activity_id, pref_value)
+
+
+
+    # </lower level parsing helpers>

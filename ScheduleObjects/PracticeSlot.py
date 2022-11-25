@@ -21,5 +21,5 @@ class PracticeSlot(ActivitySlot):
         self.__update_overlaps()
     
 
-    def __update_overlaps():
+    def __update_overlaps(self):
         pass

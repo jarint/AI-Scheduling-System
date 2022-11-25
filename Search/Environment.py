@@ -19,9 +19,9 @@ class Environment:
         # we can store the set of all incompatible activities for some given activity
     UNWANTED = set() # games/pracices that cannot be assigned to certain slots.
         # stored as a set of tuples, whose first element is an activity id, and second element is a slot id
-    PREFERENCES = [] # a list of league preferences for time slots of games and practices
+    PREFERENCES = {} # maps (slot id, activity id) -> preference value
     PAIR = {} # Games to be scheduled at the same time
-        # maps activity id to another acitivity id 
+        # maps activity id to a set of activity id's
     PARTASSIGN = [] # Hard Constraint. To be scheduled immediately. List of 2-tuples whose first entry is an activity id
         # and whose second entry is a slot id
 
@@ -29,7 +29,7 @@ class Environment:
 
         @staticmethod
         def update_name(name: str):
-            Environment.name = name
+            Environment.NAME = name
 
 
         @staticmethod
@@ -49,7 +49,7 @@ class Environment:
 
 
         @staticmethod
-        def add_practice():
+        def add_practice(practice: Practice):
             pass
 
 
