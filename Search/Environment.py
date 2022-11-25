@@ -4,6 +4,8 @@ This class represents the environment which will store things like user input an
 
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
+from ScheduleObjects.GameSlot import GameSlot
+from ScheduleObjects.PracticeSlot import PracticeSlot
 
 class Environment:
 
@@ -31,8 +33,8 @@ class Environment:
 
 
         @staticmethod
-        def add_game_slot(day: str, start_time: str, gamemax: int, gamemin: int):
-            # Environment.GAMESLOTS.append()
+        def add_game_slot(game_slot: GameSlot):
+            Environment.GAME_SLOT_ID_TO_OBJ[game_slot.id] = game_slot
             pass
         
 
@@ -42,8 +44,8 @@ class Environment:
         
 
         @staticmethod
-        def add_game(id: str, association: str, age: str, tier: str, division: int):
-            Environment.GAME_ID_TO_OBJ[id] = Game(id, association, age, tier, division)
+        def add_game(game: Game):
+            Environment.GAME_ID_TO_OBJ[game.id] = game
 
 
         @staticmethod

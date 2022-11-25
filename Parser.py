@@ -10,7 +10,13 @@ import os
 import re
 
 from Search.Environment import Environment
-from Enumerations import ActivityType
+from Enumerations import ActivityType, Weekday
+from ScheduleObjects.Game import Game
+from ScheduleObjects.ActivitySlot import ActivitySlot
+from ScheduleObjects.Practice import Practice
+from ScheduleObjects.GameSlot import GameSlot
+from ScheduleObjects.PracticeSlot import PracticeSlot
+from Enumerations import EnumValueToObjMaps
 
 
 def parse(env: Environment):
@@ -135,13 +141,8 @@ class Parser:
         logging.debug("  __parse_game_slots")
         while (self.__next_line() is not None):
             line = self.line_str
-
-            split_line = re.split(self.COMMA_REGEX, line)
-            day = split_line[0]
-            start_time = split_line[1]
-            gamemax = int(split_line[2])
-            gamemin = int(split_line[3])
-            # self.env.Adders.add_game_slot(day, start_time, gamemax, gamemin)
+            game_slot = self.__parse_game_slot(line)
+            self.env.Adders.add_game_slot(game_slot)
 
 
     def __parse_practice_slots(self) -> None:
@@ -153,31 +154,17 @@ class Parser:
     def __parse_games(self) -> None:
         logging.debug("  __parse_games")
         while (self.__next_line() is not None):
-            # This is the game identifier
             line = self.line_str
-
-            # Parsing (splitting) game identifier (should be four resulting strings)
-            split_line = line.split(' ')
-            if len(split_line) != 4: raise RuntimeError("Issue parsing game '" + line + "': split does not result in four elements")
-
-            id = line
-            association = split_line[0]
-            division = int(split_line[3])
-
-            # Parsing age and tier
-            age_tier = split_line[1].split('T')
-            age = age_tier[0]
-            if len(age_tier) == 2: tier = 'T' + age_tier[1]
-            else: tier = None
-
-            # Adding game to environment
-            self.env.Adders.add_game(id, association, age, tier, division)
+            game = self.__parse_game_id(line)
+            self.env.Adders.add_game(game)
 
 
     def __parse_practices(self) -> None:
         logging.debug("  __parse_practices")
         while (self.__next_line() is not None):
             line = self.line_str
+            practice = self.__parse_practice_id(line)
+            self.env.Adders.add_practice(practice)
 
 
     def __parse_not_compatible(self) -> None:
@@ -214,19 +201,76 @@ class Parser:
     # </file parsing methods>
 
 
+    def __time_str_to_int(self, time_str: str) -> int:
+        accepted = True
+        try:
+            hours, mins = (int(e) for e in time_str.strip().split(":"))
+        except ValueError:
+            accepted = False
+        except IndexError:
+            accepted = False
+        if not accepted:
+            raise ValueError("improper time string format")
+
+        return hours * 60 + mins
+            
+
+
     def __parse_activity_id(self, activity_id: str) -> None:
         activity_type = self.__decide_activity_type(activity_id)
         if activity_type == ActivityType.GAME:
-            pass
+            return self.__parse_game_id(activity_id)
         elif activity_type == ActivityType.PRACTICE:
-            pass
+            return self.__parse_practice_id(activity_id)
         else:
-            pass
+            raise Exception("invalid activity type")
+
+
+    def __parse_game_id(self, game_id: str) -> Game:
+        # Parsing (splitting) game identifier (should be four resulting strings)
+        split_id = game_id.split(' ')
+        if len(split_id) != 4: raise RuntimeError("Issue parsing game '" + game_id + "': split does not result in four elements")
+        id = game_id
+        association = split_id[0]
+
+        # Parsing age and tier
+        age_tier = split_id[1].split('T')
+        age = age_tier[0]
+        if len(age_tier) == 2: tier = 'T' + age_tier[1]
+        else: tier = None
+        division = int(split_id[3])
+
+        return Game(id, association, age, tier, division)
+
+
+    def __parse_practice_id(self, practice_id: str) -> Practice:
+        pass
+
+
+    def __parse_activity_slot(self, activity_slot_name: str) -> ActivitySlot:
+        pass
+
+
+    def __parse_game_slot(self, game_slot_name: str) -> GameSlot:
+        split_line = re.split(self.COMMA_REGEX, game_slot_name)
+        weekday_name = split_line[0]
+        weekday = EnumValueToObjMaps.WEEKDAYS[weekday_name]
+        start_time = split_line[1]
+        gamemax = int(split_line[2])
+        gamemin = int(split_line[3])
+
+        game_slot = GameSlot(weekday, start_time, gamemax, gamemin)
+
+
+    def __parse_practice_slot(self, practice_slot_name: str) -> PracticeSlot:
+        pass
 
     
     def __decide_activity_type(self, activity_id: str) -> str:
-        # TODO
-        return ActivityType.GAME
+        if ("PRC" in activity_id or "OPN" in activity_id):
+            return ActivityType.PRACTICE
+        else:
+            return ActivityType.GAME
     
 
     
