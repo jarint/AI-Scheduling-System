@@ -2,8 +2,11 @@
 This class represents the environment which will store things like user input and search parameters.
 '''
 
+from Enumerations import ActivityType, Weekday
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
+from ScheduleObjects.GameSlot import GameSlot
+from ScheduleObjects.PracticeSlot import PracticeSlot
 
 class Environment:
 
@@ -17,23 +20,23 @@ class Environment:
         # we can store the set of all incompatible activities for some given activity
     UNWANTED = set() # games/pracices that cannot be assigned to certain slots.
         # stored as a set of tuples, whose first element is an activity id, and second element is a slot id
-    PREFERENCES = [] # a list of league preferences for time slots of games and practices
+    PREFERENCES = {} # maps (slot id, activity id) -> preference value
     PAIR = {} # Games to be scheduled at the same time
-        # maps activity id to another acitivity id 
+        # maps activity id to a set of activity id's
     PARTASSIGN = [] # Hard Constraint. To be scheduled immediately. List of 2-tuples whose first entry is an activity id
         # and whose second entry is a slot id
+
 
     class Adders:
 
         @staticmethod
         def update_name(name: str):
-            Environment.name = name
+            Environment.NAME = name
 
 
         @staticmethod
-        def add_game_slot(day: str, start_time: str, gamemax: int, gamemin: int):
-            # Environment.GAMESLOTS.append()
-            pass
+        def add_game_slot(game_slot: GameSlot):
+            Environment.GAME_SLOT_ID_TO_OBJ[game_slot.id] = game_slot
         
 
         @staticmethod
@@ -42,12 +45,12 @@ class Environment:
         
 
         @staticmethod
-        def add_game(id: str, association: str, age: str, tier: str, division: int):
-            Environment.GAME_ID_TO_OBJ[id] = Game(id, association, age, tier, division)
+        def add_game(game: Game):
+            Environment.GAME_ID_TO_OBJ[game.id] = game
 
 
         @staticmethod
-        def add_practice():
+        def add_practice(practice: Practice):
             pass
 
 
@@ -62,15 +65,20 @@ class Environment:
 
 
         @staticmethod
-        def add_preference():
-            pass
+        def add_preference(preference: "tuple[tuple[ActivityType, Weekday, str], str, int]"):
+            slot_id, activity_id, pref_value = preference
+            Environment.PREFERENCES[slot_id, activity_id] = pref_value
 
 
         @staticmethod
-        def add_pair():
-            pass
+        def add_pair(pair: "tuple[str, str]"):
+            activity_a, activity_b = pair
+            Environment.PAIR[activity_a] = Environment.PAIR[activity_a].union(Environment.PAIR[activity_b])
+            Environment.PAIR[activity_b] = Environment.PAIR[activity_b].union(Environment.PAIR[activity_a])
+            Environment.PAIR[activity_a].add(activity_b)
+            Environment.PAIR[activity_b].add(activity_a)
         
 
         @staticmethod
-        def add_partassign():
-            pass
+        def add_partassign(partassign: "tuple[str, str]"):
+            Environment.Adders.add_partassign(partassign)
