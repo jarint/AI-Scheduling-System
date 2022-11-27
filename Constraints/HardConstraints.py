@@ -27,8 +27,7 @@ class HardConstraints:
             passes = passes and HardConstraints.GeneralConstraints.check_practice_constraints()
         else:
             raise TypeError("Activity given to 'check_constraints method must be either of type 'Game' or type 'Practice'")
-        passes = passes and HardConstraints.CityConstraints.check_city_constraints()
-        return passes
+        return passes and HardConstraints.CityConstraints.check_city_constraints()
 
 
     class GeneralConstraints:
@@ -77,31 +76,33 @@ class HardConstraints:
         # Not compatible assignment
         @staticmethod
         def not_compatible(schedule: Schedule, latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]") -> bool:
-            # id is the id of the activity being added and slot is the list of activity ids for the slot that id is being added to
-            latest_activity_id, latest_slot = latest_assignment
-            for activity_id in schedule.assignments[latest_slot]:
-                if latest_activity_id == activity_id: 
-                    return False
+            latest_id, latest_slot = latest_assignment
+            for id in schedule.assignments[latest_slot]:
+                # if env.NOT_COMPATIBLE[latest_id].contains(id): return False
+                pass
             
             return True
 
 
         # Partial assignment
         @staticmethod
-        def part_assign(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
-            pass
+        def part_assign(schedule: Schedule, latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]") -> bool:
+            latest_id, latest_slot = latest_assignment
+            for id in schedule.assignments[latest_slot]:
+                # if env.NOT_COMPATIBLE[latest_id].contains(id): return True
+                pass
+            
+            return False
 
 
         # Unwanted assignment
         @staticmethod
-        def unwanted(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
-            pass
+        def unwanted(schedule: Schedule, latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]") -> bool:
+            latest_id, latest_slot = latest_assignment
+            # for slot in env.UNWANTED[latest_id]:
+            #     if latest_slot == slot:
+            #         return False
+            return True
 
 
     class CityConstraints:
