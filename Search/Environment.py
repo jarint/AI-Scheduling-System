@@ -18,13 +18,31 @@ class Environment:
     PRACTICE_SLOT_ID_TO_OBJ = {} # maps practice slot id's to practice slot instances
     NOT_COMPATIBLE = {} # maps activity id's to sets of activity id's. Rather than storing pairs, 
         # we can store the set of all incompatible activities for some given activity
-    UNWANTED = set() # games/pracices that cannot be assigned to certain slots.
+    UNWANTED = {} # games/pracices that cannot be assigned to certain slots.
         # stored as a set of tuples, whose first element is an activity id, and second element is a slot id
     PREFERENCES = {} # maps (slot id, activity id) -> preference value
     PAIR = {} # Games to be scheduled at the same time
         # maps activity id to a set of activity id's
-    PARTASSIGN = [] # Hard Constraint. To be scheduled immediately. List of 2-tuples whose first entry is an activity id
+    PARTASSIGN = {} # Hard Constraint. To be scheduled immediately. List of 2-tuples whose first entry is an activity id
         # and whose second entry is a slot id
+    
+    MO_G_SLOTS = []
+    TU_G_SLOT = []
+    MO_P_SLOTS = []
+    TU_P_SLOTS = []
+    FR_P_SLOTS = []
+    
+    # to iterate over the game or practice slots on a given day
+        # for slot_id in MO_G_SLOTS:
+        #     slot = GAME_SLOT_ID_TO_OBJ[slot_id]
+    
+    @staticmethod
+    def initialize():
+        # intialize GAME_SLOT_ID_TO_OBJ
+        # initialize PRACTICE_SLOT_ID_TO_OBJ
+        # key: (<activity_type>, <weekday>, <start time>)
+        pass
+
 
 
     class Adders:
