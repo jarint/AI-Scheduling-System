@@ -31,8 +31,7 @@ class Environment:
     PREFERENCES = {} # maps (slot id, activity id) -> preference value
     PAIR = {} # Games to be scheduled at the same time
         # maps activity id to a set of activity id's
-    PARTASSIGN = {} # Hard Constraint. To be scheduled immediately. List of 2-tuples whose first entry is an activity id
-        # and whose second entry is a slot id
+    PARTASSIGN = {} # Hard Constraint. To be scheduled immediately. Maps activity to slot id
 
     # </during-parser initialization>
 
@@ -214,5 +213,9 @@ class Environment:
         
 
         @staticmethod
-        def add_partassign(partassign: "tuple[str, str]"):
-            pass
+        def add_partassign(partassign: "tuple[str, tuple[ActivityType, Weekday, str]]"):
+            activity_id, slot_id = partassign
+            Environment.PARTASSIGN[activity_id] = slot_id
+        
+
+        

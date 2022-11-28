@@ -15,7 +15,6 @@ class Scheduler:
         self.env: Environment = Environment()
         self.parser: Parser = Parser(self.env)
 
-
     
     # start function internal methods start the search process
     def search(self):

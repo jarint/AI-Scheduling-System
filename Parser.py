@@ -45,9 +45,10 @@ class Parser:
 
     def __init__(self, env: Environment) -> None:
         self.env = env
+        Environment.pre_parser_initialization()
         self.__parse_commandline_args()
         self.__parse_file()
-        Environment.initialize_data()
+        Environment.post_parser_initialization()
 
 
     def __next_line(self) -> str:
@@ -162,6 +163,13 @@ class Parser:
 
     def __parse_practices(self) -> None:
         logging.debug("  __parse_practices")
+
+        # special bookings (this is a city of calgary hard constraint that requires these special practices)
+        special_a = Practice("CMSA U12T1S", "CMSA", "U12", "1", None)
+        special_b = Practice("CMSA U13T1S", "CMSA", "U13", "1", None)
+        Environment.Adders.add_practice(special_a)
+        Environment.Adders.add_practice(special_b)
+
         while (self.__next_line() is not None):
             line = self.line_str
             practice = self.__parse_practice_id(line)
