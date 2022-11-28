@@ -89,8 +89,8 @@ class HardConstraints:
         def part_assign(schedule: Schedule, latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]") -> bool:
             latest_id, latest_slot = latest_assignment
             for id in schedule.assignments[latest_slot]:
-                if Environment.NOT_COMPATIBLE[latest_id].contains(id): return True
-                pass
+                if Environment.NOT_COMPATIBLE[latest_id].contains(id): 
+                    return True
             
             return False
 

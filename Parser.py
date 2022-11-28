@@ -47,6 +47,7 @@ class Parser:
         self.env = env
         self.__parse_commandline_args()
         self.__parse_file()
+        Environment.initialize_data()
 
 
     def __next_line(self) -> str:
@@ -211,7 +212,7 @@ class Parser:
             line = self.line_str
             itemized = re.split(self.COMMA_REGEX, line)
             activity_id = itemized[0]
-            activity_type = self.__decide_activity_type(itemized[0])
+            activity_type = self.decide_activity_type(itemized[0])
             weekday = EnumValueToObjMaps.WEEKDAYS[itemized[1]]
             time_str = itemized[2]
             slot_id = (activity_type, weekday, time_str)
@@ -222,20 +223,6 @@ class Parser:
 
     
     # <lower level parsing helpers>
-
-
-    def __time_str_to_int(self, time_str: str) -> int:
-        try:
-            hours, mins = (int(e) for e in time_str.strip().split(":"))
-        except ValueError:
-            raise ValueError(f"invalid time string: {time_str}")
-            
-        return hours * 60 + mins
-
-
-    def __decide_if_evening_slot(self, time_str: str) -> bool:
-        time_int = self.__time_str_to_int(time_str)
-        return time_int >= 1080 # 18:00 - 18 * 60 = 1080
             
 
     def __parse_activity_id(self, activity_id: str) -> None:
@@ -301,7 +288,7 @@ class Parser:
     def __parse_preference(self, preference_str: str) -> "tuple[tuple[ActivityType, Weekday, str], str, int]":
         try:
             itemized = re.split(self.COMMA_REGEX, preference_str)
-            activity_type = self.__decide_activity_type(itemized[2])
+            activity_type = self.decide_activity_type(itemized[2])
             weekday = EnumValueToObjMaps.WEEKDAYS[itemized[0]]
             start_time = itemized[1]
             slot_id = (activity_type, weekday, start_time)

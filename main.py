@@ -16,6 +16,7 @@ class Main:
         s = Scheduler()
         s.search()
     
+    
     @staticmethod
     def clear_log():
         with open("program_log.log", "w"):
