@@ -27,7 +27,7 @@ class Environment:
         # and whose second entry is a slot id
     
     MO_G_SLOTS = []
-    TU_G_SLOT = []
+    TU_G_SLOT = [] 
     MO_P_SLOTS = []
     TU_P_SLOTS = []
     FR_P_SLOTS = []
@@ -36,13 +36,13 @@ class Environment:
         # for slot_id in MO_G_SLOTS:
         #     slot = GAME_SLOT_ID_TO_OBJ[slot_id]
     
+
     @staticmethod
     def initialize():
         # intialize GAME_SLOT_ID_TO_OBJ
         # initialize PRACTICE_SLOT_ID_TO_OBJ
         # key: (<activity_type>, <weekday>, <start time>)
         pass
-
 
 
     class Adders:

@@ -112,6 +112,7 @@ class HardConstraints:
             "CMSA U13T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00")
         }
 
+        
         @staticmethod
         def check_city_constraints(
             schedule: Schedule, 
@@ -136,6 +137,8 @@ class HardConstraints:
             pass
         
 
+        # May be better to include the Tuesday meeting slot, but assign it a game min/max of 0
+        
         # @staticmethod
         # def meeting_constraint(
         #     schedule: Schedule, 
@@ -152,7 +155,6 @@ class HardConstraints:
         #                 and len(schedule.tues_practices[slot_id]) > 0
         #             ):
         #                 return False
-            
         #     return True
         
 
