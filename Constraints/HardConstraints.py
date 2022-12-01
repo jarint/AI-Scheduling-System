@@ -79,8 +79,6 @@ class HardConstraints:
             latest_id, latest_slot = latest_assignment
             for id in schedule.assignments[latest_slot]:
                 if Environment.NOT_COMPATIBLE[latest_id].contains(id): return False
-                pass
-            
             return True
 
 
@@ -90,8 +88,6 @@ class HardConstraints:
             latest_id, latest_slot = latest_assignment
             for id in schedule.assignments[latest_slot]:
                 if Environment.NOT_COMPATIBLE[latest_id].contains(id): return True
-                pass
-            
             return False
 
 
