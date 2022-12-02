@@ -176,11 +176,31 @@ class Parser:
             self.env.Adders.add_practice(practice)
 
 
-    def __parse_not_compatible(self, games_and_practices: str):
+    # Returns a list of 2 games of 2 practice object that are not compatible
+    def __parse_not_compatible(self, games_and_practices_string: str):
         # example: CSMA U13T3 DIV 01 PRC 01, CSMA U13T3 DIV 02 OPN 02
-        split_line = games_and_practices.split(', ')
+        games_and_practices = games_and_practices_string.split(', ')
+        not_compatible_teams = []
+        for team in games_and_practices:
+            team_info = team.split(' ')
+            print(team_info)
+            if len(team_info) > 4:
+                team_association = team_info[0]
+                team_age_and_tier = team_info[1].split('T')
+                team_age = team_age_and_tier[0]
+                team_tier = team_age_and_tier[1]
+                team_division = team_info[3]
+                team_prac = team_info[4] + ' ' + team_info[5]
+                not_compatible_teams.append(Practice(team_association, team_age, team_tier, team_division, team_prac))
+            else:
+                team_association = team_info[0]
+                team_age_and_tier = team_info[1].split('T')
+                team_age = team_age_and_tier[0]
+                team_tier = team_age_and_tier[1]
+                team_division = team_info[3]
+                not_compatible_teams.append(Game(team_association, team_age, team_tier, team_division))
+        return not_compatible_teams
         
-
 
     def __parse_unwanted(self) -> None:
         logging.debug("  __parse_unwanted")
