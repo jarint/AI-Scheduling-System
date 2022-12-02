@@ -121,9 +121,10 @@ class Parser:
             line = self.line_str
 
 
-    def __parse_not_compatible(self) -> None:
-        while (self.__next_line() is not None):
-            line = self.line_str
+    def __parse_not_compatible(self, games_and_practices: str):
+        # example: CSMA U13T3 DIV 01 PRC 01, CSMA U13T3 DIV 02 OPN 02
+        split_line = games_and_practices.split(', ')
+        
 
 
     def __parse_unwanted(self) -> None:
