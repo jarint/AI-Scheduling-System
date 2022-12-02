@@ -4,8 +4,8 @@ corresponding to games and practices, which will both have attributes of this cl
 
 '''
 
-class Slot:
+from abc import ABC, abstractmethod
+from ScheduleObjects.Activity import Activity
 
-    # Empty constructor (TODO)
-    def __init__(self) -> None:
-        pass
+class ActivitySlot(ABC):
+    pass
