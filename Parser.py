@@ -19,10 +19,6 @@ from ScheduleObjects.PracticeSlot import PracticeSlot
 from Enumerations import EnumValueToObjMaps
 
 
-def parse(env: Environment):
-    Parser(env)
-
-
 class Parser:
     FILE_HEADINGS = [
         "Name:",
@@ -43,8 +39,7 @@ class Parser:
     COMMA_REGEX = r"\s*,\s*"
 
 
-    def __init__(self, env: Environment) -> None:
-        self.env = env
+    def __init__(self) -> None:
         Environment.pre_parser_initialization()
         self.__parse_commandline_args()
         self.__parse_file()
@@ -72,7 +67,7 @@ class Parser:
         logging.debug("    " + str(next_line.strip()))
         return next_line
 
-        
+        _str
     def __parse_commandline_args(self) -> None:
         logging.debug("__parse_commandline_args")
         args = sys.argv
@@ -80,14 +75,14 @@ class Parser:
         
         self.filename = args[1]
         (
-            self.env.w_minfilled,
-            self.env.w_pref,
-            self.env.w_pair,
-            self.env.w_secdiff,
-            self.env.pen_gamemin, 
-            self.env.pen_practicemin, 
-            self.env.pen_notpaired, 
-            self.env.pen_section
+            Environment.w_minfilled,
+            Environment.w_pref,
+            Environment.w_pair,
+            Environment.w_secdiff,
+            Environment.pen_gamemin, 
+            Environment.pen_practicemin, 
+            Environment.pen_notpaired, 
+            Environment.pen_section
         ) = (int(arg) for arg in args[2:])
 
         
@@ -144,7 +139,7 @@ class Parser:
         while (self.__next_line() is not None):
             line = self.line_str
             game_slot = self.__parse_game_slot(line)
-            self.env.Adders.add_game_slot(game_slot)
+            Environment.Adders.add_game_slot(game_slot)
 
 
     def __parse_practice_slots(self) -> None:
@@ -158,7 +153,7 @@ class Parser:
         while (self.__next_line() is not None):
             line = self.line_str
             game = self.__parse_game_id(line)
-            self.env.Adders.add_game(game)
+            Environment.Adders.add_game(game)
 
 
     def __parse_practices(self) -> None:
@@ -173,7 +168,7 @@ class Parser:
         while (self.__next_line() is not None):
             line = self.line_str
             practice = self.__parse_practice_id(line)
-            self.env.Adders.add_practice(practice)
+            Environment.Adders.add_practice(practice)
 
 
     # Returns a list of 2 games of 2 practice object that are not compatible
@@ -214,24 +209,24 @@ class Parser:
             line = self.line_str
             preference = self.__parse_preference(line)
             slot_id, activity_id, pref_value = preference
-            self.env.Adders.add_preference(preference)
+            Environment.Adders.add_preference(preference)
         
         # assign default value of 0 if unspecified
-        for slot_id in self.env.GAME_SLOT_ID_TO_OBJ | self.env.PRACTICE_SLOT_ID_TO_OBJ:
-            for activity_id in self.env.GAME_ID_TO_OBJ | self.env.PRACTICE_ID_TO_OBJ:
-                if (slot_id, activity_id) not in self.env.PREFERENCES:
-                    self.env.PREFERENCES[(slot_id, activity_id)] = 0
+        for slot_id in Environment.GAME_SLOT_ID_TO_OBJ | Environment.PRACTICE_SLOT_ID_TO_OBJ:
+            for activity_id in Environment.GAME_ID_TO_OBJ | Environment.PRACTICE_ID_TO_OBJ:
+                if (slot_id, activity_id) not in Environment.PREFERENCES:
+                    Environment.PREFERENCES[(slot_id, activity_id)] = 0
 
 
     def __parse_pairs(self) -> None:
         logging.debug("  __parse_pairs")
-        for activity_id in self.env.GAME_ID_TO_OBJ | self.env.PRACTICE_ID_TO_OBJ:
-            self.env.PAIR[activity_id] = set()
+        for activity_id in Environment.GAME_ID_TO_OBJ | Environment.PRACTICE_ID_TO_OBJ:
+            Environment.PAIR[activity_id] = set()
 
         while (self.__next_line() is not None):
             line = self.line_str
             pair = re.split(self.COMMA_REGEX, line)
-            self.env.Adders.add_pair(pair)
+            Environment.Adders.add_pair(pair)
             
 
     def __parse_partial_assignments(self) -> None:
@@ -244,7 +239,7 @@ class Parser:
             weekday = EnumValueToObjMaps.WEEKDAYS[itemized[1]]
             time_str = itemized[2]
             slot_id = (activity_type, weekday, time_str)
-            self.env.Adders.add_partassign((activity_id, slot_id))
+            Environment.Adders.add_partassign((activity_id, slot_id))
 
 
     # </file parsing methods>
