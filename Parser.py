@@ -173,31 +173,26 @@ class Parser:
 
     # Returns a list of 2 games of 2 practice object that are not compatible
     def __parse_not_compatible(self, games_and_practices_string: str):
-        # example: CSMA U13T3 DIV 01 PRC 01, CSMA U13T3 DIV 02 OPN 02
-        games_and_practices = games_and_practices_string.split(', ')
-        not_compatible_teams = []
-        for team in games_and_practices:
-            team_info = team.split(' ')
-            print(team_info)
-            if len(team_info) > 4:
-                team_association = team_info[0]
-                team_age_and_tier = team_info[1].split('T')
-                team_age = team_age_and_tier[0]
-                team_tier = team_age_and_tier[1]
-                team_division = team_info[3]
-                team_prac = team_info[4] + ' ' + team_info[5]
-                not_compatible_teams.append(Practice(team, team_association, team_age, team_tier, team_division, team_prac))
-            else:
-                team_association = team_info[0]
-                team_age_and_tier = team_info[1].split('T')
-                team_age = team_age_and_tier[0]
-                team_tier = team_age_and_tier[1]
-                team_division = team_info[3]
-                not_compatible_teams.append(Game(team, team_association, team_age, team_tier, team_division))
-        return not_compatible_teams
+        while (self.__next_line() is not None):
+            activity_1, activity_2 = games_and_practices_string.split(', ')
+            Environment.Adders.add_not_compatible(activity_1, activity_2)
         
 
     def __parse_unwanted(self, unwanted_schedule_string) -> None:
+        unwanted_id = "str"
+        if unwanted_id in Environment.GAME_IDS:
+            # is a game
+            # turn input into game slot_id
+            # add to corresponding list
+            pass
+        elif unwanted_id in Environment.PRACTICE_IDS:
+            # is a practice
+            # turn input into practice slot_id
+            # add to corresponding list
+            pass
+        else:
+            raise(RuntimeError("Unwanted ID not found in game IDs or practice IDs"))
+
         #example CSMA U13T3 DIV 01, MO, 8:00
         unwanted_schedule = unwanted_schedule_string.split(', ')
         unwanted_day = unwanted_schedule[1]

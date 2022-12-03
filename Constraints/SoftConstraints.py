@@ -12,6 +12,11 @@ from ScheduleObjects.ActivitySlot import Slot
 
 class SoftConstraints:
 
+
+    # TODO: determine if we can compute the penalty values of the new assignment, or if we need to recompute for the whole schedule
+        # Do we need to recalculate? Or can we simply add the change in the penalty value that the new assignment causes?
+
+
     @staticmethod
     def check_constraints(schedule: Schedule, activity: Activity, slot: Slot):
         passes = True

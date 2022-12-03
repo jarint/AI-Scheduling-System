@@ -31,11 +31,16 @@ class Environment:
     PREFERENCES = {} # maps (slot id, activity id) -> preference value
     PAIR = {} # Games to be scheduled at the same time
         # maps activity id to a set of activity id's
-    PARTASSIGN = {} # Hard Constraint. To be scheduled immediately. Maps activity to slot id
+    PARTASSIGN = {} # Hard Constraint. To be scheduled immediately. Maps activity id to slot id
 
     # </during-parser initialization>
 
     # <post-parser initialization>
+
+    SPECIAL_PRACTICE_BOOKINGS = {
+        "CMSA U12T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00"), 
+        "CMSA U13T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00")
+    }
 
     ACTIVITY_IDS = []
     GAME_IDS = []
@@ -188,7 +193,8 @@ class Environment:
 
         @staticmethod
         def add_not_compatible(activity1_id: str, activity2_id: str):
-            if  True: pass
+            Environment.NOT_COMPATIBLE[activity1_id].append(activity2_id)
+            Environment.NOT_COMPATIBLE[activity2_id].append(activity1_id)
 
 
         @staticmethod

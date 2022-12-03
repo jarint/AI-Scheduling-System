@@ -104,12 +104,6 @@ class HardConstraints:
 
 
     class CityConstraints:
-
-        SPECIAL_PRACTICE_BOOKINGS = {
-            "CMSA U12T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00"), 
-            "CMSA U13T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00")
-        }
-
         
         @staticmethod
         def check_city_constraints(schedule: Schedule) -> bool:

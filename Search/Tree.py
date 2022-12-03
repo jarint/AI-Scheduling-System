@@ -24,15 +24,22 @@ class Node:
         pass
 
     def compute_opt(self):
-        latest_id = self.pr.latest_assignment[0]
+        latest_id, latest_slot_id = self.pr.latest_assignment
 
-        # If 
-        if latest_id in Environment.PARTASSIGN:
+        # We want to make assignments that fulfil hard constraints first, so we give those assignments infinitely negative values (else, we assign eval())
+        if (latest_id in Environment.PARTASSIGN) and (latest_slot_id == Environment.PARTASSIGN[latest_id]):
+            self.opt = float('-inf')
+        elif (latest_id in Environment.SPECIAL_PRACTICE_BOOKINGS) and (latest_slot_id == Environment.SPECIAL_PRACTICE_BOOKINGS[latest_id]):
             self.opt = float('-inf')
         else:
             self.opt = self.eval()
 
     def eval(self):
+        """
+        Input: ...
+        Output: ...
+        Computes the penalty value of this node's schedule.
+        """
         # TODO: code functionality for computing eval and return the value
         return 0
 
