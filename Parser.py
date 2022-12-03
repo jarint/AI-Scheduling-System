@@ -45,8 +45,10 @@ class Parser:
 
     def __init__(self, env: Environment) -> None:
         self.env = env
+        Environment.pre_parser_initialization()
         self.__parse_commandline_args()
         self.__parse_file()
+        Environment.post_parser_initialization()
 
 
     def __next_line(self) -> str:
@@ -161,17 +163,44 @@ class Parser:
 
     def __parse_practices(self) -> None:
         logging.debug("  __parse_practices")
+
+        # special bookings (this is a city of calgary hard constraint that requires these special practices)
+        special_a = Practice("CMSA U12T1S", "CMSA", "U12", "1", None)
+        special_b = Practice("CMSA U13T1S", "CMSA", "U13", "1", None)
+        Environment.Adders.add_practice(special_a)
+        Environment.Adders.add_practice(special_b)
+
         while (self.__next_line() is not None):
             line = self.line_str
             practice = self.__parse_practice_id(line)
             self.env.Adders.add_practice(practice)
 
 
-    def __parse_not_compatible(self) -> None:
-        logging.debug("  __parse_not_compatible")
-        while (self.__next_line() is not None):
-            line = self.line_str
-
+    # Returns a list of 2 games of 2 practice object that are not compatible
+    def __parse_not_compatible(self, games_and_practices_string: str):
+        # example: CSMA U13T3 DIV 01 PRC 01, CSMA U13T3 DIV 02 OPN 02
+        games_and_practices = games_and_practices_string.split(', ')
+        not_compatible_teams = []
+        for team in games_and_practices:
+            team_info = team.split(' ')
+            print(team_info)
+            if len(team_info) > 4:
+                team_association = team_info[0]
+                team_age_and_tier = team_info[1].split('T')
+                team_age = team_age_and_tier[0]
+                team_tier = team_age_and_tier[1]
+                team_division = team_info[3]
+                team_prac = team_info[4] + ' ' + team_info[5]
+                not_compatible_teams.append(Practice(team_association, team_age, team_tier, team_division, team_prac))
+            else:
+                team_association = team_info[0]
+                team_age_and_tier = team_info[1].split('T')
+                team_age = team_age_and_tier[0]
+                team_tier = team_age_and_tier[1]
+                team_division = team_info[3]
+                not_compatible_teams.append(Game(team_association, team_age, team_tier, team_division))
+        return not_compatible_teams
+        
 
     def __parse_unwanted(self) -> None:
         logging.debug("  __parse_unwanted")
@@ -211,7 +240,7 @@ class Parser:
             line = self.line_str
             itemized = re.split(self.COMMA_REGEX, line)
             activity_id = itemized[0]
-            activity_type = self.__decide_activity_type(itemized[0])
+            activity_type = self.decide_activity_type(itemized[0])
             weekday = EnumValueToObjMaps.WEEKDAYS[itemized[1]]
             time_str = itemized[2]
             slot_id = (activity_type, weekday, time_str)
@@ -222,20 +251,6 @@ class Parser:
 
     
     # <lower level parsing helpers>
-
-
-    def __time_str_to_int(self, time_str: str) -> int:
-        try:
-            hours, mins = (int(e) for e in time_str.strip().split(":"))
-        except ValueError:
-            raise ValueError(f"invalid time string: {time_str}")
-            
-        return hours * 60 + mins
-
-
-    def __decide_if_evening_slot(self, time_str: str) -> bool:
-        time_int = self.__time_str_to_int(time_str)
-        return time_int >= 1080 # 18:00 - 18 * 60 = 1080
             
 
     def __parse_activity_id(self, activity_id: str) -> None:
@@ -301,7 +316,7 @@ class Parser:
     def __parse_preference(self, preference_str: str) -> "tuple[tuple[ActivityType, Weekday, str], str, int]":
         try:
             itemized = re.split(self.COMMA_REGEX, preference_str)
-            activity_type = self.__decide_activity_type(itemized[2])
+            activity_type = self.decide_activity_type(itemized[2])
             weekday = EnumValueToObjMaps.WEEKDAYS[itemized[0]]
             start_time = itemized[1]
             slot_id = (activity_type, weekday, start_time)

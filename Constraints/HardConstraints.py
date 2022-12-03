@@ -33,71 +33,64 @@ class HardConstraints:
     class GeneralConstraints:
 
         @staticmethod
-        def check_game_constraints(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
+        def check_game_constraints(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
             pass
 
 
         @staticmethod
-        def check_practice_constraints(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
+        def check_practice_constraints(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
             pass
 
 
         @staticmethod
-        def game_max(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
+        def game_max(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
             pass
 
 
         @staticmethod
-        def practice_max(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
+        def practice_max(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
             pass
 
 
         # Game/practice same slot assignment
         @staticmethod
-        def gp_same_slot(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
+        def gp_same_slot(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
             pass
         
 
         # Not compatible assignment
         @staticmethod
-        def not_compatible(schedule: Schedule, latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]") -> bool:
-            latest_id, latest_slot = latest_assignment
-            for id in schedule.assignments[latest_slot]:
-                if Environment.NOT_COMPATIBLE[latest_id].contains(id): return False
+        def not_compatible(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
+            for id in schedule.assignments[slot_id]:
+                if Environment.NOT_COMPATIBLE[activity_id].contains(id): 
+                    return False
             return True
 
 
         # Partial assignment
         @staticmethod
-        def part_assign(schedule: Schedule, latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]") -> bool:
-            latest_id, latest_slot = latest_assignment
-            for id in schedule.assignments[latest_slot]:
-                if Environment.NOT_COMPATIBLE[latest_id].contains(id): return True
+        def part_assign(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
+            for id in schedule.assignments[slot_id]:
+                if Environment.NOT_COMPATIBLE[activity_id].contains(id): 
+                    return True
             return False
 
 
         # Unwanted assignment
         @staticmethod
-        def unwanted(schedule: Schedule, latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]") -> bool:
-            latest_id, latest_slot = latest_assignment
-            for slot in Environment.UNWANTED[latest_id]:
-                if latest_slot == slot:
+        def unwanted(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
+            for slot in Environment.UNWANTED[activity_id]:
+                if slot_id == slot:
                     return False
+            
             return True
 
 
@@ -110,53 +103,46 @@ class HardConstraints:
 
         
         @staticmethod
-        def check_city_constraints(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
+        def check_city_constraints(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
             pass
 
 
         @staticmethod
-        def evening_slot_constraint(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
+        def evening_slot_constraint(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
             pass
 
 
         @staticmethod
-        def age_group_constraint(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
-            pass
-        
+        def age_group_constraint(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
+            
 
         # May be better to include the Tuesday meeting slot, but assign it a game min/max of 0
-        
-        # @staticmethod
-        # def meeting_constraint(
-        #     schedule: Schedule, 
-        #     latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        # ) -> bool:
-        #     for slot_id in Environment.GAME_SLOT_ID_TO_OBJ | Environment.PRACTICE_SLOT_ID_TO_OBJ:
-        #         activity_type, weekday, start_time = slot_id
-        #         if (weekday == Weekday.TU and start_time in ["11:00", "12:00"]):
-        #             if (activity_type == ActivityType.GAME 
-        #                 and len(schedule.tues_games[slot_id]) > 0
-        #             ):
-        #                 return False
-        #             if (activity_type == ActivityType.PRACTICE 
-        #                 and len(schedule.tues_practices[slot_id]) > 0
-        #             ):
-        #                 return False
-        #     return True
+        @staticmethod
+        def meeting_constraint(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
+            activity_type, weekday, start_time = slot_id
+            if (weekday == Weekday.TU 
+                and start_time in ["11:00", "12:00"] 
+                and len(schedule.assignments[slot_id]) > 0
+            ):
+                return False
+            else:
+                return True
         
 
         @staticmethod
-        def special_bookings_constraint(
-            schedule: Schedule, 
-            latest_assignment: "tuple[str, tuple[ActivityType, Weekday, str]]"
-        ) -> bool:
-            "CMSA U12T1S", "CMSA U13T1S"
+        def special_bookings_constraint(schedule: Schedule) -> bool:
+            activity_id, slot_id = schedule.latest_assignment
+            if activity_id not in ["CMSA U12T1S", "CMSA U13T1S"]:
+                return True
+            
+            if slot_id == (ActivityType.PRACTICE, Weekday.TU, "18:00-19:00"):
+                return True
+            else:
+                return False
+            
+            
+            
