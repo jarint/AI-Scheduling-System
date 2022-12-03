@@ -197,11 +197,29 @@ class Parser:
         return not_compatible_teams
         
 
-    def __parse_unwanted(self) -> None:
-        logging.debug("  __parse_unwanted")
-        while (self.__next_line() is not None):
-            line = self.line_str
+    def __parse_unwanted(self, unwanted_schedule_string) -> None:
+        #example CSMA U13T3 DIV 01, MO, 8:00
+        unwanted_schedule = unwanted_schedule_string.split(', ')
+        unwanted_day = unwanted_schedule[1]
+        unwanted_time = unwanted_schedule[2]
+        unwanted_team_info = unwanted_schedule[0].split(' ')
 
+        if len(unwanted_team_info) > 4:
+            team_association = unwanted_team_info[0]
+            team_age_and_tier = unwanted_team_info[1].split('T')
+            team_age = team_age_and_tier[0]
+            team_tier = team_age_and_tier[1]
+            team_division = unwanted_team_info[3]
+            team_prac = unwanted_team_info[4] + ' ' + unwanted_team_info[5]
+            unwanted_team = Practice(team_association, team_age, team_tier, team_division, team_prac)
+        else:
+            team_association = unwanted_team_info[0]
+            team_age_and_tier = unwanted_team_info[1].split('T')
+            team_age = team_age_and_tier[0]
+            team_tier = team_age_and_tier[1]
+            team_division = unwanted_team_info[3]
+            unwanted_team = Game(team_association, team_age, team_tier, team_division)
+        return unwanted_team, unwanted_day, unwanted_time
 
     def __parse_preferences(self) -> None:
         logging.debug("  __parse_preferences")
