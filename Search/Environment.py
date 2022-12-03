@@ -73,8 +73,8 @@ class Environment:
 
 
         @staticmethod
-        def add_not_compatible():
-            pass
+        def add_not_compatible(activity1_id: str, activity2_id: str):
+            if  True: pass
 
 
         @staticmethod
