@@ -167,11 +167,13 @@ class Environment:
         @staticmethod
         def add_game_slot(game_slot: GameSlot):
             Environment.GAME_SLOT_ID_TO_OBJ[game_slot.id] = game_slot
+            Environment.GAME_SLOT_IDS.append(game_slot.id)
         
 
         @staticmethod
-        def add_practice_slot():
-            pass
+        def add_practice_slot(practice_slot: PracticeSlot):
+            Environment.PRACTICE_SLOT_ID_TO_OBJ[practice_slot.id] = practice_slot
+            Environment.PRACTICE_SLOT_IDS.append(practice_slot)
         
 
         @staticmethod
@@ -181,7 +183,7 @@ class Environment:
 
         @staticmethod
         def add_practice(practice: Practice):
-            pass
+            Environment.PRACTICE_ID_TO_OBJ[practice.id] = practice
 
 
         @staticmethod
