@@ -20,18 +20,24 @@ from Parser import Parser
 class HardConstraints:
 
     @staticmethod
-    def check_constraints(schedule: Schedule):
+    def check_constraints(schedule: Schedule, assignment): # TODO: add type of 'assignment' parameter
         # Index 1 of latest_assignment is the slot ID, so index 0 of that is the activity type
-        activity_type = schedule.latest_assignment[1][0]
+        activity_type = assignment[1][0]
 
         passes = True
         if (activity_type == ActivityType.GAME):
-            passes = passes and HardConstraints.GeneralConstraints.check_game_constraints()
+            passes = passes and HardConstraints.GeneralConstraints.check_game_constraints(schedule, assignment)
         elif (activity_type == ActivityType.PRACTICE):
-            passes = passes and HardConstraints.GeneralConstraints.check_practice_constraints()
+            passes = passes and HardConstraints.GeneralConstraints.check_practice_constraints(schedule, assignment)
         else:
             raise TypeError("Invalid activity type of latest assignment in 'check_activity_constraints()' method")
-        return passes and HardConstraints.CityConstraints.check_city_constraints()
+        return passes and HardConstraints.CityConstraints.check_city_constraints(schedule, assignment)
+
+
+    # TODO: update all constraint check methods to use 'assignment' as second parameter instead of 'schedule.latest_assignment'
+        # note that assignment[0] is an activity ID (str) and assignment[1] is a slot ID (tuple)
+            # slot_id[0] is an activity type (ActivityType), slot_id[1] is a weekday (Weekday), and slot_id[2] is a start time (str)
+                # the ActivityType and WeekDay classes can be found in Enumerations.py
 
 
     class GeneralConstraints:
