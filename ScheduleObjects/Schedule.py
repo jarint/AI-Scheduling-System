@@ -15,8 +15,8 @@ class Schedule:
     def __init__(self) -> None:
         self.assignments = {slot_id: set() for slot_id in Environment.ALL_SLOT_IDS}
         self.latest_assignment = None
-        self.remaining_games = [] # needs to initialized to be the entire set of games
-        self.remaining_practices = [] # needs to be initialized to be the entire set of practices
+        self.remaining_games = [] # TODO: needs to initialized to be the entire set of games
+        self.remaining_practices = [] # TODO: needs to be initialized to be the entire set of practices
 
     
     def get_copy(self):

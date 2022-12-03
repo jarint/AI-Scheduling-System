@@ -173,10 +173,26 @@ class Parser:
 
     # Returns a list of 2 games of 2 practice object that are not compatible
     def __parse_not_compatible(self, games_and_practices_string: str):
-        # example: CSMA U13T3 DIV 01 PRC 01, CSMA U13T3 DIV 02 OPN 02
-        games_and_practices = games_and_practices_string.split(', ')
+        while (self.__next_line() is not None):
+            activity_1, activity_2 = games_and_practices_string.split(', ')
+            Environment.Adders.add_not_compatible(activity_1, activity_2)
+        
 
     def __parse_unwanted(self, unwanted_schedule_string) -> None:
+        unwanted_id = "str"
+        if unwanted_id in Environment.GAME_IDS:
+            # is a game
+            # turn input into game slot_id
+            # add to corresponding list
+            pass
+        elif unwanted_id in Environment.PRACTICE_IDS:
+            # is a practice
+            # turn input into practice slot_id
+            # add to corresponding list
+            pass
+        else:
+            raise(RuntimeError("Unwanted ID not found in game IDs or practice IDs"))
+
         #example CSMA U13T3 DIV 01, MO, 8:00
         unwanted_schedule = unwanted_schedule_string.split(', ')
         unwanted_day = unwanted_schedule[1]
