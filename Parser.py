@@ -211,7 +211,7 @@ class Parser:
             team_tier = team_age_and_tier[1]
             team_division = unwanted_team_info[3]
             team_prac = unwanted_team_info[4] + ' ' + unwanted_team_info[5]
-            unwanted_team = Practice(team_association, team_age, team_tier, team_division, team_prac)
+            unwanted_team = Practice(unwanted_schedule[0], team_association, team_age, team_tier, team_division, team_prac)
         else:
             team_association = unwanted_team_info[0]
             team_age_and_tier = unwanted_team_info[1].split('T')
