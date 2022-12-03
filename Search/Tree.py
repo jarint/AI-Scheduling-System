@@ -51,7 +51,7 @@ class Tree:
 
     def erw(self, parent_node: Node):
         for schedule in SearchModel.div(parent_node.pr):
-            parent_node.add_child(schedule, False)
+            parent_node.add_child(parent_node, schedule, False)
 
 
     def fleaf(self, parent_node: Node):
@@ -62,4 +62,4 @@ class Tree:
         parent_node.children.sort(key=lambda x: x.opt)
 
         # Choosing leftmost child
-        return parent_node.children
+        return parent_node.children[0]

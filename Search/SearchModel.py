@@ -20,29 +20,29 @@ class SearchModel:
 
         # Generating possible assignments for games
         for game_id in schedule.remaining_games:
-            for slot_id in Environment.GAME_SLOT_IDS:
-                assignment = tuple(game_id, slot_id)
+            for game_slot_id in Environment.GAME_SLOT_IDS:
+                assignment = tuple(game_id, game_slot_id)
                 if HardConstraints.check_constraints(schedule, assignment):
                     assignments.append(assignment)
 
         # Generating possible assignments for practices
         for practice_id in schedule.remaining_practices:
-            for slot_id in Environment.PRACTICE_SLOT_IDS:
-                assignment = tuple(practice_id, slot_id)
+            for practice_slot_id in Environment.PRACTICE_SLOT_IDS:
+                assignment = tuple(practice_id, practice_slot_id)
                 if HardConstraints.check_constraints(schedule, assignment):
-                    assignments.append()
+                    assignments.append(assignment)
 
         # Generating and returning new Schedule objects for each of these new assignments
         return SearchModel.generate_schedules(schedule, assignments)
 
 
     @staticmethod
-    def generate_schedules(schedule, assignments):
+    def generate_schedules(schedule: Schedule, assignments):
         """
         Input: List of assignments, where each assignment is represented by a 2-tuple containing an activity ID and a slot ID
         Output: List of Schedule objects, where each corresponds to the addition of one of the new assignments given as input
         """
-        schedules = [Schedule]
+        schedules = []
 
         for assign in assignments:
             schedule = schedule.get_copy()
