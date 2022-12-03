@@ -13,25 +13,28 @@ from ScheduleObjects.Schedule import Schedule
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
 from ScheduleObjects.ActivitySlot import ActivitySlot
+from Enumerations import ActivityType
 from Parser import Parser
 
 
 class HardConstraints:
 
     @staticmethod
-    def check_constraints(schedule: Schedule, activity: Activity, slot: ActivitySlot):
+    def check_constraints(schedule: Schedule):
+        # Index 1 of latest_assignment is the slot ID, so index 0 of that is the activity type
+        activity_type = schedule.latest_assignment[1][0]
+
         passes = True
-        if (activity.ACTIVITY_TYPE == ActivityType.GAME):
+        if (activity_type == ActivityType.GAME):
             passes = passes and HardConstraints.GeneralConstraints.check_game_constraints()
-        elif (activity.ACTIVITY_TYPE == ActivityType.PRACTICE):
+        elif (activity_type == ActivityType.PRACTICE):
             passes = passes and HardConstraints.GeneralConstraints.check_practice_constraints()
         else:
-            raise TypeError("Activity given to 'check_constraints method must be either of type 'Game' or type 'Practice'")
+            raise TypeError("Invalid activity type of latest assignment in 'check_activity_constraints()' method")
         return passes and HardConstraints.CityConstraints.check_city_constraints()
 
 
     class GeneralConstraints:
-
         @staticmethod
         def check_game_constraints(schedule: Schedule) -> bool:
             activity_id, slot_id = schedule.latest_assignment

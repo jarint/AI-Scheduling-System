@@ -15,6 +15,8 @@ class Schedule:
     def __init__(self) -> None:
         self.assignments = {slot_id: set() for slot_id in Environment.ALL_SLOT_IDS}
         self.latest_assignment = None
+        self.remaining_games = [] # needs to initialized to be the entire set of games
+        self.remaining_practices = [] # needs to be initialized to be the entire set of practices
 
     
     def get_copy(self):
@@ -23,13 +25,29 @@ class Schedule:
     
     def get_activities_in_slot(self, slot_id: "tuple[ActivityType, Weekday, str]") -> "set[str]":
         return self.assignments[slot_id]
-        
+
+
+    def assign_activity(self, activity_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
+        """
+        Assumes that the type of activity associated with 'activity_id' is of the same type as 'slot_id'
+        """
+        activity_type = slot_id[0]
+
+        if activity_type == ActivityType.GAME:
+            self.assign_game(activity_id, slot_id)
+        elif activity_type == ActivityType.PRACTICE:
+            self.assign_practice(activity_id, slot_id)
+        else:
+            raise(RuntimeError("Invalid activity type of slot ID in 'assign_activity()' method"))
+
 
     def assign_game(self, game_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
         self.assignments[slot_id].add(game_id)
         self.latest_assignment = (game_id, slot_id)
+        self.remaining_games.remove(game_id) # if this line causes errors, maybe try a reassignment
 
 
     def assign_practice(self, practice_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
         self.assignments[slot_id].add(practice_id)
         self.latest_assignment = (practice_id, slot_id)
+        self.remaining_games.remove(practice_id) # if this line causes errors, maybe try a reassignment
