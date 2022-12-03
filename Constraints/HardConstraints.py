@@ -70,7 +70,6 @@ class HardConstraints:
             for id in schedule.assignments[slot_id]:
                 if Environment.NOT_COMPATIBLE[activity_id].contains(id): 
                     return False
-            
             return True
 
 
@@ -81,7 +80,6 @@ class HardConstraints:
             for id in schedule.assignments[slot_id]:
                 if Environment.NOT_COMPATIBLE[activity_id].contains(id): 
                     return True
-            
             return False
 
 
@@ -103,6 +101,7 @@ class HardConstraints:
             "CMSA U13T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00")
         }
 
+        
         @staticmethod
         def check_city_constraints(schedule: Schedule) -> bool:
             activity_id, slot_id = schedule.latest_assignment
@@ -119,8 +118,8 @@ class HardConstraints:
         def age_group_constraint(schedule: Schedule) -> bool:
             activity_id, slot_id = schedule.latest_assignment
             
-        
 
+        # May be better to include the Tuesday meeting slot, but assign it a game min/max of 0
         @staticmethod
         def meeting_constraint(schedule: Schedule) -> bool:
             activity_id, slot_id = schedule.latest_assignment

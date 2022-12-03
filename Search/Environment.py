@@ -51,12 +51,10 @@ class Environment:
     FR_P_SLOT_IDS = []
 
     # </post-parser initialization>
-
     
     # to iterate over the game or practice slots on a given day
         # for slot_id in MO_G_SLOTS:
         #     slot = GAME_SLOT_ID_TO_OBJ[slot_id]
-    
     # key: (<activity_type>, <weekday>, <start time>)
 
 
@@ -125,7 +123,7 @@ class Environment:
             filter(lambda id: id[0] == ActivityType.PRACTICE, Environment.SLOT_ID_TO_OBJ)
         }
 
-    
+
     @staticmethod
     def post_parser_initialization(): 
 
@@ -159,7 +157,6 @@ class Environment:
         ]
 
 
-
     class Adders:
 
         @staticmethod
@@ -188,8 +185,8 @@ class Environment:
 
 
         @staticmethod
-        def add_not_compatible():
-            pass
+        def add_not_compatible(activity1_id: str, activity2_id: str):
+            if  True: pass
 
 
         @staticmethod
