@@ -67,7 +67,7 @@ class Parser:
         logging.debug("    " + str(next_line.strip()))
         return next_line
 
-        _str
+
     def __parse_commandline_args(self) -> None:
         logging.debug("__parse_commandline_args")
         args = sys.argv
