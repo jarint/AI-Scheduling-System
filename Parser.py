@@ -179,42 +179,26 @@ class Parser:
         
 
     def __parse_unwanted(self, unwanted_schedule_string) -> None:
-        unwanted_id = "str"
-        if unwanted_id in Environment.GAME_IDS:
-            # is a game
-            # turn input into game slot_id
-            # add to corresponding list
-            pass
-        elif unwanted_id in Environment.PRACTICE_IDS:
-            # is a practice
-            # turn input into practice slot_id
-            # add to corresponding list
-            pass
-        else:
-            raise(RuntimeError("Unwanted ID not found in game IDs or practice IDs"))
-
-        #example CSMA U13T3 DIV 01, MO, 8:00
-        unwanted_schedule = unwanted_schedule_string.split(', ')
-        unwanted_day = unwanted_schedule[1]
-        unwanted_time = unwanted_schedule[2]
-        unwanted_team_info = unwanted_schedule[0].split(' ')
-
-        if len(unwanted_team_info) > 4:
-            team_association = unwanted_team_info[0]
-            team_age_and_tier = unwanted_team_info[1].split('T')
-            team_age = team_age_and_tier[0]
-            team_tier = team_age_and_tier[1]
-            team_division = unwanted_team_info[3]
-            team_prac = unwanted_team_info[4] + ' ' + unwanted_team_info[5]
-            unwanted_team = Practice(unwanted_schedule[0], team_association, team_age, team_tier, team_division, team_prac)
-        else:
-            team_association = unwanted_team_info[0]
-            team_age_and_tier = unwanted_team_info[1].split('T')
-            team_age = team_age_and_tier[0]
-            team_tier = team_age_and_tier[1]
-            team_division = unwanted_team_info[3]
-            unwanted_team = Game(team_association, team_age, team_tier, team_division)
-        return unwanted_team, unwanted_day, unwanted_time
+        while (self.__next_line() is not None):
+            line = self.line_str
+            activity_id, date, time = re.split(self.COMMA_REGEX, line)
+            if activity_id in Environment.GAME_IDS:
+                activity_type = ActivityType.GAME
+                pass
+            elif activity_id in Environment.PRACTICE_IDS:
+                activity_type = ActivityType.PRACTICE
+                pass
+            else:
+                raise(RuntimeError("Unwanted ID not found in game IDs or practice IDs"))
+            
+            if (date == 'MO'):
+                date_enu = Weekday.MO
+            elif (date == 'TU'):
+                date_enu = Weekday.TU
+            elif (date == 'FR'):
+                date_enu = Weekday.FR
+            slot = (activity_type, date_enu, time)
+            Environment.Adders.add_unwanted(activity_id, slot)
 
     def __parse_preferences(self) -> None:
         logging.debug("  __parse_preferences")
