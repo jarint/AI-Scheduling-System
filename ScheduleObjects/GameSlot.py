@@ -7,11 +7,12 @@ class GameSlot(ActivitySlot):
 
     ACTIVITY_TYPE = ActivityType.GAME
 
-    def __init__(self, weekday: Weekday, time_str: str, start_time: str, duration: str, is_evening_slot: bool):
+    def __init__(self, weekday: Weekday, time_str: str, start_time: str, gamemax: int, gamemin: int, duration: str, is_evening_slot: bool):
         self.weekday = weekday
         self.time_str = time_str
         self.id = (self.ACTIVITY_TYPE, weekday, time_str)
-
+        self.gamemax = gamemax
+        self.gamemin = gamemin
         self.start_time = start_time
         self.end_time = start_time + duration
         self.duration = duration
