@@ -7,20 +7,17 @@ class GameSlot(ActivitySlot):
 
     ACTIVITY_TYPE = ActivityType.GAME
 
-    def __init__(self, weekday: Weekday, time_str: str, start_time: str, gamemax: int, gamemin: int, duration: str, is_evening_slot: bool):
+    def __init__(self, weekday: Weekday, start_time: str, end_time: str, is_evening_slot: bool, gamemax: int, gamemin: int):
         self.weekday = weekday
-        self.time_str = time_str
-        self.id = (self.ACTIVITY_TYPE, weekday, time_str)
+        self.id = (self.ACTIVITY_TYPE, weekday, start_time)
+        self.start_time = start_time
+        self.end_time = end_time
+        self.is_evening_slot = is_evening_slot
         self.gamemax = gamemax
         self.gamemin = gamemin
-        self.start_time = start_time
-        self.end_time = start_time + duration
-        self.duration = duration
-        self.is_evening_slot = is_evening_slot
 
-        self.overlaps = []
-        self.__update_overlaps()
+        self.overlaps = set()
     
 
-    def __update_overlaps(self):
+    def update_overlaps(self):
         pass

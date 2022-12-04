@@ -41,8 +41,11 @@ class SoftConstraints:
             pass
 
         @staticmethod
-        def game_min():
-            pass
+        def game_min(schedule: Schedule, latest_assignment: tuple):
+            activity_id, slot_id = latest_assignment
+            activity_type, weekday, start_time = slot_id
+            
+
 
         @staticmethod
         def practice_min():

@@ -90,7 +90,7 @@ class Environment:
             "18:00-20:00"
         ]
 
-        def time_str_to_int(self, time_str: str) -> int:
+        def time_str_to_int(time_str: str) -> int:
             try:
                 hours, mins = (int(e) for e in time_str.strip().split(":"))
             except ValueError:
@@ -99,15 +99,15 @@ class Environment:
             return hours * 60 + mins
 
 
-        def decide_if_evening_slot(self, time_str: str) -> bool:
-            time_int = self.__time_str_to_int(time_str)
+        def decide_if_evening_slot(time_str: str) -> bool:
+            time_int = time_str_to_int(time_str)
             return time_int >= 1080 # 18:00 ~ 18 * 60 = 1080
 
         def params(shortcut: str):
             start_time, end_time = shortcut.split("-")
             start_time_int = time_str_to_int(start_time)
             is_evening_slot = decide_if_evening_slot(start_time_int)
-            return (start_time, end_time, is_evening_slot)
+            return (start_time, end_time, is_evening_slot, None, None)
 
 
         MO_GAME_SLOTS = [GameSlot(Weekday.MO, *params(shortcut)) for shortcut in MO_GAME_SLOT_SHORTCUTS]
@@ -128,17 +128,9 @@ class Environment:
             filter(lambda id: id[0] == ActivityType.PRACTICE, Environment.SLOT_ID_TO_OBJ)
         }
 
-
-    @staticmethod
-    def post_parser_initialization(): 
-
-        Environment.ACTIVITY_IDS = [activity_id for activity_id in Environment.ACTIVITY_ID_TO_OBJ]
-        Environment.GAME_IDS = [game_id for game_id in Environment.GAME_ID_TO_OBJ]
-        Environment.PRACTICE_IDS = [practice_id for practice_id in Environment.PRACTICE_ID_TO_OBJ]
         Environment.ALL_SLOT_IDS = [slot_id for slot_id in Environment.SLOT_ID_TO_OBJ]
         Environment.PRACTICE_SLOT_IDS = [slot_id for slot_id in Environment.PRACTICE_SLOT_ID_TO_OBJ]
         Environment.GAME_SLOT_IDS = [slot_id for slot_id in Environment.GAME_SLOT_ID_TO_OBJ]
-
 
         Environment.MO_G_SLOTS_IDS = [slot_id for slot_id in 
             filter(lambda id: id[0] == ActivityType.GAME 
@@ -160,6 +152,18 @@ class Environment:
             filter(lambda id: id[0] == ActivityType.PRACTICE 
             and id[1] == Weekday.FR, Environment.ALL_SLOT_IDS)
         ]
+
+        for slot_id in Environment.ALL_SLOT_IDS:
+            slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+            slot_obj.update
+
+
+
+    @staticmethod
+    def post_parser_initialization(): 
+        Environment.ACTIVITY_IDS = [activity_id for activity_id in Environment.ACTIVITY_ID_TO_OBJ]
+        Environment.GAME_IDS = [game_id for game_id in Environment.GAME_ID_TO_OBJ]
+        Environment.PRACTICE_IDS = [practice_id for practice_id in Environment.PRACTICE_ID_TO_OBJ]
 
 
     class Adders:
