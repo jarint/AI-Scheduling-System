@@ -296,6 +296,17 @@ class Parser:
     def __parse_practice_slot(self, practice_slot_name: str) -> PracticeSlot:
         pass
 
+    def time_str_to_int(self, time_str: str) -> int:
+        try:
+            hours, mins = (int(e) for e in time_str.strip().split(":"))
+        except ValueError:
+            raise ValueError(f"invalid time string: {time_str}")
+        
+        return hours * 60 + mins
+
+    def decide_if_evening_slot(self, time_str: str) -> bool:
+        time_int = self.time_str_to_int(time_str)
+        return time_int >= 1080 # 18:00 - 18 * 60 = 1080
     
     def decide_activity_type(self, activity_id: str) -> ActivityType:
         for phrase in ["PRC", "OPN", "CMSA U12T1S", "CMSA U13T1S"]:
