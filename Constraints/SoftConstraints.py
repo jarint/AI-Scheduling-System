@@ -87,7 +87,7 @@ class SoftConstraints:
             if activity_id in Environment.PAIR:
                 paired_activities = Environment.PAIR[activity_id]
                 for act in paired_activities:
-                    if act in schedule.remaining_games | schedule.remaining_practices:
+                    if (act in schedule.remaining_games) or (act in schedule.remaining_practices):
                         continue
                     if act not in schedule.assignments[slot_id]:
                         delta_penalty += Environment.PEN_NOTPAIRED
