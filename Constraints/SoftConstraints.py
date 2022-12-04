@@ -4,6 +4,7 @@ in our tree as it is generated.
 
 '''
 
+from Search.Environment import Environment
 from ScheduleObjects.Activity import Activity
 from ScheduleObjects.Schedule import Schedule
 from ScheduleObjects.Game import Game
@@ -31,40 +32,88 @@ class SoftConstraints:
         passes = passes and SoftConstraints.CityConstraints.check_city_constraint()
         return passes
     
+    
     class GeneralConstraints:
+
         @staticmethod
         def check_game_constraints(schedule: Schedule, game: Game, slot: GameSlot):
+            # TODO not sure if this method needs to exist
             pass
+
 
         @staticmethod
         def check_practice_constraints(schedule: Schedule, practice: Practice, slot: PracticeSlot):
+            # TODO not sure if this method needs to exist
             pass
 
+
         @staticmethod
-        def game_min(schedule: Schedule, latest_assignment: tuple):
+        def game_min(schedule: Schedule, latest_assignment: tuple) -> int:
             activity_id, slot_id = latest_assignment
-            activity_type, weekday, start_time = slot_id
+            slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+            penatly_included = len(schedule.assignments[slot_id]) < slot_obj.gamemin
+            delta_penalty = 0
+            if penatly_included:
+                delta_penalty = -1 * Environment.PEN_GAMEMIN # reducing penalty value
+            return delta_penalty
             
 
+        @staticmethod
+        def practice_min(schedule: Schedule, latest_assignment: tuple) -> int:
+            activity_id, slot_id = latest_assignment
+            slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+            penalty_included = len(schedule.assignments[slot_id]) < slot_obj.practicemin
+            delta_penalty = 0
+            if penalty_included:
+                delta_penalty = -1 * Environment.PEN_PRACTICEMIN # reducing penalty value
+            return delta_penalty
+
 
         @staticmethod
-        def practice_min():
-            pass
+        def preference(schedule: Schedule, latest_assignment: tuple) -> int:
+            activity_id, slot_id = latest_assignment
+            delta_penalty = 0
+            if activity_id in Environment.PREFERENCES:
+                pref_slot_id, preference = Environment.PREFERENCES[activity_id]
+                if slot_id != pref_slot_id:
+                    delta_penalty = preference
+            return delta_penalty
+
 
         @staticmethod
-        def preference():
-            pass
+        def pair(schedule: Schedule, latest_assignment: tuple) -> int:
+            activity_id, slot_id = latest_assignment
+            delta_penalty = 0
+            if activity_id in Environment.PAIR:
+                paired_activities = Environment.PAIR[activity_id]
+                for act in paired_activities:
+                    if act in schedule.remaining_games | schedule.remaining_practices:
+                        continue
+                    if act not in schedule.assignments[slot_id]:
+                        delta_penalty += Environment.PEN_NOTPAIRED
+            return delta_penalty
 
-        @staticmethod
-        def pair():
-            pass
 
     class CityConstraints:
+
         @staticmethod
-        def check_city_constraint():
-            pass
+        def check_city_constraint(schedule: Schedule, latest_assignment: tuple) -> int:
+            activity_id, slot_id = latest_assignment
+            delta_penalty = 0
+            activity_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
+            age, tier = activity_obj.age, activity_obj.tier
+            for act_id in schedule.assignments[slot_id]:
+                act_obj = Environment.ACTIVITY_ID_TO_OBJ[act_id]
+                a, t = act_obj.age, act_obj.tier
+                if a == age and t == tier:
+                    delta_penalty += Environment.PEN_SECTION
+            return delta_penalty
+
         
+        # TODO it seems like the city constraint and age-tier constraint the same thing?    
         @staticmethod
-        def age_tier_constraint():
-            pass
+        def age_tier_constraint(schedule: Schedule, latest_assignment: tuple) -> int:
+            activity_id, slot_id = latest_assignment
+            delta_penalty = None
+            return delta_penalty
     

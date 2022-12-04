@@ -25,6 +25,19 @@ class Environment:
 
     # <during-parser initialization>
 
+        # <penalty values>
+
+    W_MINFILLED = 0
+    W_PREF = 0
+    W_PAIR = 0
+    W_SECDIFF = 0
+    PEN_GAMEMIN = 0
+    PEN_PRACTICEMIN = 0
+    PEN_NOTPAIRED = 0
+    PEN_SECTION = 0
+
+        # </penalty values >
+
     NAME = ""
     ACTIVITY_ID_TO_OBJ = {} # maps activity id's to activity instances
     GAME_ID_TO_OBJ = {} # maps game id's to instances of Game class
@@ -33,7 +46,7 @@ class Environment:
         # we can store the set of all incompatible activities for some given activity
     UNWANTED = {} # games/pracices that cannot be assigned to certain slots.
         # stored as a set of tuples, whose first element is an activity id, and second element is a slot id
-    PREFERENCES = {} # maps (slot id, activity id) -> preference value
+    PREFERENCES = {} # maps activity id -> (slot_id, preference value)
     PAIR = {} # Games to be scheduled at the same time
         # maps activity id to a set of activity id's
     PARTASSIGN = {} # Hard Constraint. To be scheduled immediately. Maps activity id to slot id
@@ -103,6 +116,7 @@ class Environment:
             time_int = time_str_to_int(time_str)
             return time_int >= 1080 # 18:00 - 18 * 60 = 1080
 
+
         def params(shortcut: str):
             start_time, end_time = shortcut.split("-")
             start_time_int = time_str_to_int(start_time)
@@ -153,10 +167,20 @@ class Environment:
             and id[1] == Weekday.FR, Environment.ALL_SLOT_IDS)
         ]
 
-        for slot_id in Environment.ALL_SLOT_IDS:
-            slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
-            slot_obj.update
-
+        for slot_a_id in Environment.ALL_SLOT_IDS:
+            slot_a_obj = Environment.SLOT_ID_TO_OBJ[slot_a_id]
+            slot_a_start = time_str_to_int(slot_a_obj.start_time)
+            slot_a_end = time_str_to_int(slot_a_obj.end_time)
+            for slot_b_id in Environment.ALL_SLOT_IDS:
+                slot_b_obj = Environment.SLOT_ID_TO_OBJ[slot_b_id]
+                slot_b_start = time_str_to_int(slot_b_obj.start_time)
+                slot_b_end = time_str_to_int(slot_b_obj.end_time)
+                if (
+                    slot_a_obj.weekday == slot_b_obj.weekday
+                    and not (slot_a_start >= slot_b_end or slot_a_end <= slot_b_start)
+                ):
+                    slot_a_obj.overlaps.append(slot_b_id)
+                    slot_b_obj.overlaps.append(slot_a_id)
 
 
     @staticmethod
@@ -207,8 +231,8 @@ class Environment:
 
         @staticmethod
         def add_preference(preference: "tuple[tuple[ActivityType, Weekday, str], str, int]"):
-            slot_id, activity_id, pref_value = preference
-            Environment.PREFERENCES[slot_id, activity_id] = pref_value
+            activity_id, slot_id, pref_value = preference
+            Environment.PREFERENCES[activity_id] = (slot_id, pref_value)
 
 
         @staticmethod

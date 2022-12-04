@@ -75,14 +75,14 @@ class Parser:
         
         self.filename = args[1]
         (
-            Environment.w_minfilled,
-            Environment.w_pref,
-            Environment.w_pair,
-            Environment.w_secdiff,
-            Environment.pen_gamemin, 
-            Environment.pen_practicemin, 
-            Environment.pen_notpaired, 
-            Environment.pen_section
+            Environment.W_MINFILLED,
+            Environment.W_PREF,
+            Environment.W_PAIR,
+            Environment.W_SECDIFF,
+            Environment.PEN_GAMEMIN, 
+            Environment.PEN_PRACTICEMIN, 
+            Environment.PEN_NOTPAIRED, 
+            Environment.PEN_SECTION
         ) = (int(arg) for arg in args[2:])
 
         
@@ -132,6 +132,7 @@ class Parser:
         logging.debug("  __parse_name")
         while (self.__next_line() is not None):
             line = self.line_str
+            Environment.NAME = line
 
 
     def __parse_game_slots(self) -> None:
@@ -146,6 +147,8 @@ class Parser:
         logging.debug("  __parse_practice_slots")
         while (self.__next_line() is not None):
             line = self.line_str
+            practice = self.__parse_practice_id(line)
+            Environment.Adders.add_practice(practice)
 
 
     def __parse_games(self) -> None:
@@ -160,8 +163,8 @@ class Parser:
         logging.debug("  __parse_practices")
 
         # special bookings (this is a city of calgary hard constraint that requires these special practices)
-        special_a = Practice("CMSA U12T1S", "CMSA", "U12", "1", None)
-        special_b = Practice("CMSA U13T1S", "CMSA", "U13", "1", None)
+        special_a = Practice("CMSA U12T1S", "CMSA", "U12", "1", None, None)
+        special_b = Practice("CMSA U13T1S", "CMSA", "U13", "1", None, None)
         Environment.Adders.add_practice(special_a)
         Environment.Adders.add_practice(special_b)
 
@@ -171,48 +174,47 @@ class Parser:
             Environment.Adders.add_practice(practice)
 
 
-    # Returns a list of 2 games of 2 practice object that are not compatible
-    def __parse_not_compatible(self, games_and_practices_string: str):
+    def __parse_not_compatible(self):
         while (self.__next_line() is not None):
-            activity_1, activity_2 = games_and_practices_string.split(', ')
+            line = self.line_str
+            activity_1, activity_2 = re.split(self.COMMA_REGEX, line)
             Environment.Adders.add_not_compatible(activity_1, activity_2)
         
 
-    def __parse_unwanted(self, unwanted_schedule_string) -> None:
+    def __parse_unwanted(self) -> None:
         while (self.__next_line() is not None):
             line = self.line_str
             activity_id, date, time = re.split(self.COMMA_REGEX, line)
             if activity_id in Environment.GAME_IDS:
                 activity_type = ActivityType.GAME
-                pass
             elif activity_id in Environment.PRACTICE_IDS:
                 activity_type = ActivityType.PRACTICE
-                pass
             else:
                 raise(RuntimeError("Unwanted ID not found in game IDs or practice IDs"))
             
             if (date == 'MO'):
-                date_enu = Weekday.MO
+                date_enum = Weekday.MO
             elif (date == 'TU'):
-                date_enu = Weekday.TU
+                date_enum = Weekday.TU
             elif (date == 'FR'):
-                date_enu = Weekday.FR
-            slot = (activity_type, date_enu, time)
+                date_enum = Weekday.FR
+            slot = (activity_type, date_enum, time)
             Environment.Adders.add_unwanted(activity_id, slot)
+
 
     def __parse_preferences(self) -> None:
         logging.debug("  __parse_preferences")
         while (self.__next_line() is not None):
             line = self.line_str
             preference = self.__parse_preference(line)
-            slot_id, activity_id, pref_value = preference
+            activity_id, slot_id, pref_value = preference
             Environment.Adders.add_preference(preference)
         
         # assign default value of 0 if unspecified
-        for slot_id in Environment.GAME_SLOT_ID_TO_OBJ | Environment.PRACTICE_SLOT_ID_TO_OBJ:
-            for activity_id in Environment.GAME_ID_TO_OBJ | Environment.PRACTICE_ID_TO_OBJ:
+        for slot_id in Environment.ALL_SLOT_IDS:
+            for activity_id in Environment.ACTIVITY_IDS:
                 if (slot_id, activity_id) not in Environment.PREFERENCES:
-                    Environment.PREFERENCES[(slot_id, activity_id)] = 0
+                    Environment.PREFERENCES[activity_id] = (slot_id, 0)
 
 
     def __parse_pairs(self) -> None:
@@ -246,7 +248,7 @@ class Parser:
             
 
     def __parse_activity_id(self, activity_id: str) -> None:
-        activity_type = self.__decide_activity_type(activity_id)
+        activity_type = self.decide_activity_type(activity_id)
         if activity_type == ActivityType.GAME:
             return self.__parse_game_id(activity_id)
         elif activity_type == ActivityType.PRACTICE:
@@ -288,7 +290,7 @@ class Parser:
         start_time = split_line[1]
         gamemax = int(split_line[2])
         gamemin = int(split_line[3])
-        is_evening_slot = self.__decide_if_evening_slot(start_time)
+        is_evening_slot = self.decide_if_evening_slot(start_time)
         return GameSlot(weekday=weekday, start_time = start_time, gamemax=gamemax, gamemin=gamemin, is_evening_slot=is_evening_slot)
 
 
@@ -299,7 +301,7 @@ class Parser:
         start_time = split_line[1]
         practicemax = int(split_line[2])
         practicemin = int(split_line[3])
-        is_evening_slot = self.__decide_if_evening_slot(start_time)
+        is_evening_slot = self.decide_if_evening_slot(start_time)
         return PracticeSlot(weekday=weekday, start_time = start_time, practicemax=practicemax, practicemin=practicemin, is_evening_slot=is_evening_slot)
 
     def time_str_to_int(self, time_str: str) -> int:

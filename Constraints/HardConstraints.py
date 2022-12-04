@@ -56,21 +56,43 @@ class HardConstraints:
         @staticmethod
         def game_max(schedule: Schedule, latest_assignment: tuple) -> bool:
             activity_id, slot_id = latest_assignment
-            pass
+            activity_type = slot_id[0]
+            slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+            if activity_type != ActivityType.GAME:
+                return True
+            if len(schedule.assignments[slot_id]) > slot_obj.gamemax:
+                return False
+            return True
 
 
         @staticmethod
         def practice_max(schedule: Schedule, latest_assignment: tuple) -> bool:
             activity_id, slot_id = latest_assignment
-            pass
+            activity_type = slot_id[0]
+            slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+            if activity_type != ActivityType.PRACTICE:
+                return True
+            if len(schedule.assignments[slot_id]) > slot_obj.practicemax:
+                return False
+            return True
 
 
         # Game/practice same slot assignment
         @staticmethod
         def gp_same_slot(schedule: Schedule, latest_assignment: tuple) -> bool:
             activity_id, slot_id = latest_assignment
-            pass
-        
+            slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+            overlapping_slots = slot_obj.overlaps
+            activity_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
+            for overlapping_slot in overlapping_slots:
+                for act_id in schedule.assignments[overlapping_slot]:
+                    act_obj = Environment.ACTIVITY_ID_TO_OBJ[act_id]
+                    if activity_obj.activity_type == act_obj.activity_type:
+                        continue
+                    if activity_obj.division == act_obj.division:
+                        return False
+            return True
+
 
         # Not compatible assignment
         @staticmethod
@@ -85,11 +107,10 @@ class HardConstraints:
         # Partial assignment
         @staticmethod
         def part_assign(schedule: Schedule, latest_assignment: tuple) -> bool:
-            activity_id, slot_id = schedule.latest_assignment
-            for id in schedule.assignments[slot_id]:
-                if Environment.NOT_COMPATIBLE[activity_id].contains(id): 
-                    return True
-            return False
+            activity_id, slot_id = latest_assignment
+            if activity_id not in Environment.PARTASSIGN:
+                return True
+            return slot_id == Environment.PARTASSIGN[activity_id]
 
 
         # Unwanted assignment
@@ -120,7 +141,7 @@ class HardConstraints:
             else:
                 return False
 
-        
+
         @staticmethod
         def age_group_constraint(schedule: Schedule, latest_assignment: tuple) -> bool:
             activity_id, slot_id = latest_assignment
@@ -135,13 +156,13 @@ class HardConstraints:
         def meeting_constraint(schedule: Schedule, latest_assignment: tuple) -> bool:
             activity_id, slot_id = latest_assignment
             activity_type, weekday, start_time = slot_id
-            if (weekday == Weekday.TU 
-                and start_time in ["11:00", "12:00"] 
-                and len(schedule.assignments[slot_id]) > 0
-            ):
-                return False
-            else:
+            if weekday != Weekday.TU:
                 return True
+            if start_time not in ["11:00", "12:00"]:
+                return True
+            if len(schedule.assignments[slot_id]) == 0:
+                return True
+            return False
         
 
         @staticmethod
@@ -150,7 +171,7 @@ class HardConstraints:
             if activity_id not in Environment.SPECIAL_PRACTICE_BOOKINGS:
                 return True
             
-            if slot_id == (ActivityType.PRACTICE, Weekday.TU, "18:00-19:00"):
+            if slot_id == (ActivityType.PRACTICE, Weekday.TU, "18:00"):
                 return True
             else:
                 return False
