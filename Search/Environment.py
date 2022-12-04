@@ -198,9 +198,8 @@ class Environment:
 
 
         @staticmethod
-        def add_unwanted():
-            pass
-
+        def add_unwanted(activity_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
+            Environment.UNWANTED[activity_id].append(slot_id)
 
         @staticmethod
         def add_preference(preference: "tuple[tuple[ActivityType, Weekday, str], str, int]"):
