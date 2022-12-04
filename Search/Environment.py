@@ -12,6 +12,11 @@ class Environment:
 
     # <pre-parser initialization>
 
+    SPECIAL_PRACTICE_BOOKINGS = {
+        "CMSA U12T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00"), 
+        "CMSA U13T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00")
+    }
+
     SLOT_ID_TO_OBJ = {} # maps slot id's to objects
     PRACTICE_SLOT_ID_TO_OBJ = {} # maps practice slot id's to practice slot instances
     GAME_SLOT_ID_TO_OBJ = {}  # maps game slot id's to game slot instances
@@ -36,11 +41,6 @@ class Environment:
     # </during-parser initialization>
 
     # <post-parser initialization>
-
-    SPECIAL_PRACTICE_BOOKINGS = {
-        "CMSA U12T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00"), 
-        "CMSA U13T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00")
-    }
 
     ACTIVITY_IDS = []
     GAME_IDS = []
@@ -101,7 +101,7 @@ class Environment:
 
         def decide_if_evening_slot(self, time_str: str) -> bool:
             time_int = self.__time_str_to_int(time_str)
-            return time_int >= 1080 # 18:00 - 18 * 60 = 1080
+            return time_int >= 1080 # 18:00 ~ 18 * 60 = 1080
 
         def params(shortcut: str):
             start_time, end_time = shortcut.split("-")
@@ -210,8 +210,6 @@ class Environment:
         @staticmethod
         def add_pair(pair: "tuple[str, str]"):
             activity_a, activity_b = pair
-            Environment.PAIR[activity_a] = Environment.PAIR[activity_a].union(Environment.PAIR[activity_b])
-            Environment.PAIR[activity_b] = Environment.PAIR[activity_b].union(Environment.PAIR[activity_a])
             Environment.PAIR[activity_a].add(activity_b)
             Environment.PAIR[activity_b].add(activity_a)
         

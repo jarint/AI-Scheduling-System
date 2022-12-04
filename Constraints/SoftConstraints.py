@@ -8,7 +8,9 @@ from ScheduleObjects.Activity import Activity
 from ScheduleObjects.Schedule import Schedule
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
-from ScheduleObjects.ActivitySlot import Slot
+from ScheduleObjects.ActivitySlot import ActivitySlot
+from ScheduleObjects.GameSlot import GameSlot
+from ScheduleObjects.PracticeSlot import PracticeSlot
 
 class SoftConstraints:
 
@@ -18,7 +20,7 @@ class SoftConstraints:
 
 
     @staticmethod
-    def check_constraints(schedule: Schedule, activity: Activity, slot: Slot):
+    def check_constraints(schedule: Schedule, activity: Activity, slot: ActivitySlot):
         passes = True
         if (isinstance(activity, Game)):
             passes = passes and SoftConstraints.GeneralConstraints.check_game_constraints()
@@ -31,11 +33,11 @@ class SoftConstraints:
     
     class GeneralConstraints:
         @staticmethod
-        def check_game_constraints(schedule: Schedule, game: Game, slot: Slot):
+        def check_game_constraints(schedule: Schedule, game: Game, slot: GameSlot):
             pass
 
         @staticmethod
-        def check_practice_constraints(schedule: Schedule, practice: Practice, slot: Slot):
+        def check_practice_constraints(schedule: Schedule, practice: Practice, slot: PracticeSlot):
             pass
 
         @staticmethod
