@@ -152,6 +152,3 @@ class HardConstraints:
                 return True
             else:
                 return False
-            
-            
-            
