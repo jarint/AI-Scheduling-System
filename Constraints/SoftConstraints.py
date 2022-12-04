@@ -29,20 +29,20 @@ class SoftConstraints:
             passes = passes and SoftConstraints.GeneralConstraints.check_practice_constraints()
         else:
             raise TypeError("Activity given to 'check_constraints method must be either of type 'Game' or type 'Practice'")
-        passes = passes and SoftConstraints.CityConstraints.check_city_constraint()
+        passes = passes and SoftConstraints.check_city_constraint()
         return passes
     
     
     class GeneralConstraints:
 
         @staticmethod
-        def check_game_constraints(schedule: Schedule, game: Game, slot: GameSlot):
+        def check_game_constraints(schedule: Schedule, latest_assignment: tuple):
             # TODO not sure if this method needs to exist
             pass
 
 
         @staticmethod
-        def check_practice_constraints(schedule: Schedule, practice: Practice, slot: PracticeSlot):
+        def check_practice_constraints(schedule: Schedule, latest_assignment: tuple):
             # TODO not sure if this method needs to exist
             pass
 
@@ -94,26 +94,15 @@ class SoftConstraints:
             return delta_penalty
 
 
-    class CityConstraints:
-
-        @staticmethod
-        def check_city_constraint(schedule: Schedule, latest_assignment: tuple) -> int:
-            activity_id, slot_id = latest_assignment
-            delta_penalty = 0
-            activity_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
-            age, tier = activity_obj.age, activity_obj.tier
-            for act_id in schedule.assignments[slot_id]:
-                act_obj = Environment.ACTIVITY_ID_TO_OBJ[act_id]
-                a, t = act_obj.age, act_obj.tier
-                if a == age and t == tier:
-                    delta_penalty += Environment.PEN_SECTION
-            return delta_penalty
-
-        
-        # TODO it seems like the city constraint and age-tier constraint the same thing?    
-        @staticmethod
-        def age_tier_constraint(schedule: Schedule, latest_assignment: tuple) -> int:
-            activity_id, slot_id = latest_assignment
-            delta_penalty = None
-            return delta_penalty
-    
+    @staticmethod
+    def check_city_constraint(schedule: Schedule, latest_assignment: tuple) -> int:
+        activity_id, slot_id = latest_assignment
+        delta_penalty = 0
+        activity_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
+        age, tier = activity_obj.age, activity_obj.tier
+        for act_id in schedule.assignments[slot_id]:
+            act_obj = Environment.ACTIVITY_ID_TO_OBJ[act_id]
+            a, t = act_obj.age, act_obj.tier
+            if a == age and t == tier:
+                delta_penalty += Environment.PEN_SECTION
+        return delta_penalty
