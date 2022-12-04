@@ -114,13 +114,19 @@ class HardConstraints:
         @staticmethod
         def evening_slot_constraint(schedule: Schedule) -> bool:
             activity_id, slot_id = schedule.latest_assignment
-            pass
-
+            activity_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
+            if (activity_obj.get_division() == 9):
+                return not Parser.decide_if_evening_slot(slot_id[2])
+            else:
+                return False
 
         @staticmethod
         def age_group_constraint(schedule: Schedule) -> bool:
             activity_id, slot_id = schedule.latest_assignment
-            
+            for activity in Schedule.get_activities_in_slot(slot_id):
+                if (Environment.ACTIVITY_ID_TO_OBJ[activity_id].get_age() == Environment.ACTIVITY_ID_TO_OBJ[activity].get_age()):
+                    return True
+            return False
 
         # May be better to include the Tuesday meeting slot, but assign it a game min/max of 0
         @staticmethod

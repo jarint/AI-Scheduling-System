@@ -100,7 +100,7 @@ class Environment:
 
 
         def decide_if_evening_slot(self, time_str: str) -> bool:
-            time_int = self.__time_str_to_int(time_str)
+            time_int = time_str_to_int(time_str)
             return time_int >= 1080 # 18:00 - 18 * 60 = 1080
 
         def params(shortcut: str):
