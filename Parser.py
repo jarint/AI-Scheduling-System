@@ -18,6 +18,8 @@ from ScheduleObjects.GameSlot import GameSlot
 from ScheduleObjects.PracticeSlot import PracticeSlot
 from Enumerations import EnumValueToObjMaps
 
+from copy import deepcopy
+
 
 class Parser:
     FILE_HEADINGS = [
@@ -150,13 +152,21 @@ class Parser:
             practice = self.__parse_practice_id(line)
             Environment.Adders.add_practice(practice)
 
-
+    # TODO: U13T1S won't actually be given in the input, but rather, we should infer its existence if U13T1 is given as input
+        # Though this is not necessarily something we will implement here
+        # Instead, if we parse U13T1 as an input game, then we will also add its special counterpart as a game
+            # I believe the same applies to U12T1
     def __parse_games(self) -> None:
         logging.debug("  __parse_games")
         while (self.__next_line() is not None):
             line = self.line_str
             game = self.__parse_game_id(line)
             Environment.Adders.add_game(game)
+
+            if ((game.age == "U12" or game.age == "U13") and game.tier == "T1"):
+                special_game = deepcopy(game)
+                special_game.id = special_game.id + "S"
+                Environment.Adders.add_game()
 
 
     def __parse_practices(self) -> None:
