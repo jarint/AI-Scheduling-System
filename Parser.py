@@ -289,12 +289,18 @@ class Parser:
         gamemax = int(split_line[2])
         gamemin = int(split_line[3])
         is_evening_slot = self.__decide_if_evening_slot(start_time)
-
-        return GameSlot(weekday, start_time, gamemax, gamemin, is_evening_slot)
+        return GameSlot(weekday=weekday, start_time = start_time, gamemax=gamemax, gamemin=gamemin, is_evening_slot=is_evening_slot)
 
 
     def __parse_practice_slot(self, practice_slot_name: str) -> PracticeSlot:
-        pass
+        split_line = re.split(self.COMMA_REGEX, practice_slot_name)
+        weekday_name = split_line[0]
+        weekday = EnumValueToObjMaps.WEEKDAYS[weekday_name]
+        start_time = split_line[1]
+        practicemax = int(split_line[2])
+        practicemin = int(split_line[3])
+        is_evening_slot = self.__decide_if_evening_slot(start_time)
+        return PracticeSlot(weekday=weekday, start_time = start_time, practicemax=practicemax, practicemin=practicemin, is_evening_slot=is_evening_slot)
 
     
     def decide_activity_type(self, activity_id: str) -> ActivityType:
