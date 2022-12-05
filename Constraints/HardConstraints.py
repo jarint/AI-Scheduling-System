@@ -25,7 +25,7 @@ class HardConstraints:
         activity_type = assignment[1][0]
 
         # Type of activity should be GAME or PRACTICE
-        if (not((activity_type == ActivityType.GAME) or (activity_type == ActivityType.PRACTICE)))
+        if (not((activity_type == ActivityType.GAME) or (activity_type == ActivityType.PRACTICE))):
             raise TypeError("Activity given to 'check_constraints' method in HardConstraints must be either of type 'Game' or type 'Practice'")
 
         return (
