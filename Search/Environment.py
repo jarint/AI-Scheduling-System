@@ -103,6 +103,7 @@ class Environment:
             "18:00-20:00"
         ]
 
+
         def time_str_to_int(time_str: str) -> int:
             try:
                 hours, mins = (int(e) for e in time_str.strip().split(":"))
@@ -131,6 +132,7 @@ class Environment:
 
         ACTIVITY_SLOTS = MO_GAME_SLOTS + TU_GAME_SLOTS + MO_PRACTICE_SLOTS + TU_PRACTICE_SLOTS + FR_PRACTICE_SLOTS
 
+        # TODO: This doesn't work. Not sure why it is 'activity in ACTIVITY_SLOTS'
         Environment.ACTIVITY_ID_TO_OBJ = {activity.id: activity for activity in ACTIVITY_SLOTS}
 
         Environment.GAME_SLOT_ID_TO_OBJ = {slot_id: Environment.SLOT_ID_TO_OBJ[slot_id] for slot_id in
