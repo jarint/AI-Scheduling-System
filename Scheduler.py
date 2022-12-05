@@ -6,12 +6,15 @@ schedule at the end of the evaluation process.
 
 from ScheduleObjects.Schedule import Schedule
 from Parser import Parser
+from Search.Environment import Environment
 
 
 class Scheduler:
 
     def __init__(self) -> None:
+        Environment.pre_parser_initialization()
         self.parser: Parser = Parser()
+        Environment.post_parser_initialization()
 
     
     # start function internal methods start the search process
