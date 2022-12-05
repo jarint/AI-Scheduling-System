@@ -12,6 +12,7 @@ from ScheduleObjects.Practice import Practice
 from ScheduleObjects.ActivitySlot import ActivitySlot
 from ScheduleObjects.GameSlot import GameSlot
 from ScheduleObjects.PracticeSlot import PracticeSlot
+from Enumerations import ActivityType
 
 class SoftConstraints:
 
@@ -21,16 +22,18 @@ class SoftConstraints:
 
 
     @staticmethod
-    def check_constraints(schedule: Schedule, activity: Activity, slot: ActivitySlot):
-        passes = True
-        if (isinstance(activity, Game)):
-            passes = passes and SoftConstraints.GeneralConstraints.check_game_constraints()
-        elif (isinstance(activity, Practice)):
-            passes = passes and SoftConstraints.GeneralConstraints.check_practice_constraints()
+    def check_constraints(schedule: Schedule, latest_assignment: tuple):
+        activity_type = latest_assignment[1][0]
+        delta_penalty = 0
+
+        if (activity_type == ActivityType.GAME):
+            delta_penalty = delta_penalty + SoftConstraints.GeneralConstraints.check_game_constraints(schedule, latest_assignment)
+        elif (activity_type == ActivityType.PRACTICE):
+            delta_penalty = delta_penalty + SoftConstraints.GeneralConstraints.check_practice_constraints(schedule, latest_assignment)
         else:
-            raise TypeError("Activity given to 'check_constraints method must be either of type 'Game' or type 'Practice'")
-        passes = passes and SoftConstraints.check_city_constraint()
-        return passes
+            raise TypeError("Activity given to 'check_constraints' method in SoftConstraints must be either of type 'Game' or type 'Practice'")
+        delta_penalty = delta_penalty + SoftConstraints.check_city_constraint()
+        return delta_penalty
     
     
     class GeneralConstraints:
