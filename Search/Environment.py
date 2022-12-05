@@ -119,9 +119,8 @@ class Environment:
 
         def params(shortcut: str):
             start_time, end_time = shortcut.split("-")
-            start_time_int = time_str_to_int(start_time)
-            is_evening_slot = decide_if_evening_slot(start_time_int)
-            return (start_time, end_time, is_evening_slot, None, None)
+            is_evening_slot = decide_if_evening_slot(start_time)
+            return (start_time, end_time, is_evening_slot, 0, 0)
 
 
         MO_GAME_SLOTS = [GameSlot(Weekday.MO, *params(shortcut)) for shortcut in MO_GAME_SLOT_SHORTCUTS]

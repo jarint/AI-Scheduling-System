@@ -1,5 +1,6 @@
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
+from Search.Environment import Environment
 
 games_and_practices_string = "CSMA U13T3 DIV 01 PRC 01, CSMA U13T3 DIV 02 OPN 02"
 activity_1, activity_2 = games_and_practices_string.split(', ')
