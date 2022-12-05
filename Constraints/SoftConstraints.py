@@ -22,7 +22,7 @@ class SoftConstraints:
 
 
     @staticmethod
-    def check_constraints(schedule: Schedule, latest_assignment: tuple):
+    def get_delta_penalty(schedule: Schedule, latest_assignment: tuple) -> int:
         activity_type = latest_assignment[1][0]
         delta_penalty = 0
 

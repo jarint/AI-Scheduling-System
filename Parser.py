@@ -91,18 +91,21 @@ class Parser:
     def __validate_args(self, args):
         valid = True
 
+        print(len(args))
+
         # Should be 10 command line arguments
-        if len(args) != 10: valid = False
+        if len(args) != 10:
+            valid = False
+        else:
+            # Second argument should be a valid input filename (first is irrelevent)
+            if not(os.path.exists(args[1])): valid = False
 
-        # Second argument should be a valid input filename (first is irrelevent)
-        if not(os.path.exists(args[1])): valid = False
-
-        # The third argument and those thereafter should be integers
-        for arg in args[2:]:
-            try:
-                int(arg)
-            except ValueError:
-                valid = False
+            # The third argument and those thereafter should be integers
+            for arg in args[2:]:
+                try:
+                    int(arg)
+                except ValueError:
+                    valid = False
 
         # If the command line arguments are invalid we raise a runtime exception for debugging purposes
         if not(valid): raise RuntimeError("Command line arguments must contain a valid filename, four integer weights (min filled, pref, pair, sec diff), and four integer penalty values(game min, practice min, not paired, section)")
@@ -149,12 +152,13 @@ class Parser:
         logging.debug("  __parse_practice_slots")
         while (self.__next_line() is not None):
             line = self.line_str
-            practice = self.__parse_practice_id(line)
-            Environment.Adders.add_practice(practice)
+            practice = self.__parse_practice_slot(line)
+            Environment.Adders.add_practice_slot(practice)
+
 
     # TODO: U13T1S won't actually be given in the input, but rather, we should infer its existence if U13T1 is given as input
         # Though this is not necessarily something we will implement here
-        # Instead, if we parse U13T1 as an input game, then we will also add its special counterpart as a game
+        # Instead, if we parse U13T1 as an input game, then we will also add its special counterpart as a practice
             # I believe the same applies to U12T1
     def __parse_games(self) -> None:
         logging.debug("  __parse_games")
@@ -166,7 +170,7 @@ class Parser:
             if ((game.age == "U12" or game.age == "U13") and game.tier == "T1"):
                 special_game = deepcopy(game)
                 special_game.id = special_game.id + "S"
-                Environment.Adders.add_game()
+                Environment.Adders.add_practice(Practice(game.association + " " + game.age + game.tier + "S", game.association, game.age, None, None))
 
 
     def __parse_practices(self) -> None:
@@ -195,6 +199,12 @@ class Parser:
         while (self.__next_line() is not None):
             line = self.line_str
             activity_id, date, time = re.split(self.COMMA_REGEX, line)
+
+            print("======================")
+            print(activity_id)
+            print(Environment.ACTIVITY_IDS)
+            print("======================")
+
             if activity_id in Environment.GAME_IDS:
                 activity_type = ActivityType.GAME
             elif activity_id in Environment.PRACTICE_IDS:
@@ -264,14 +274,16 @@ class Parser:
         elif activity_type == ActivityType.PRACTICE:
             return self.__parse_practice_id(activity_id)
         else:
-            raise Exception("invalid activity type")
+            raise Exception("Invalid activity type in Parser.__parse_activity_id()")
 
 
     def __parse_game_id(self, game_id: str) -> Game:
-        # Parsing (splitting) game identifier (should be four resulting strings)
+        # Splitting game identifier
         split_id = game_id.split(' ')
+        split_id[:] = [x for x in split_id if x] # removing empty strings in case there were extra spaces
+
         if len(split_id) != 4: raise RuntimeError("Issue parsing game '" + game_id + "': split does not result in four elements")
-        id = game_id
+
         association = split_id[0]
 
         # Parsing age and tier
@@ -279,18 +291,39 @@ class Parser:
         age = age_tier[0]
         if len(age_tier) == 2: tier = 'T' + age_tier[1]
         else: tier = None
+
         division = int(split_id[3])
 
-        return Game(id, association, age, tier, division)
+        return Game(game_id, association, age, tier, division)
 
 
     def __parse_practice_id(self, practice_id: str) -> Practice:
-        # return Practice("id", 0, "assoc", 0, "tier", "prac")
-        pass
+        # Splitting practice identifier
+        split_id = practice_id.split(' ')
+        split_id[:] = [x for x in split_id if x] # removing empty strings in case there were extra spaces
 
+        print("=======================================")
+        print(split_id)
+        print("=======================================")
 
-    def __parse_activity_slot(self, activity_slot_name: str) -> ActivitySlot:
-        pass
+        if not(len(split_id) == 4 or len(split_id) == 6): raise RuntimeError("Issue parsing practice '" + practice_id + "': split does not result in four or six elements")
+
+        association = split_id[0]
+
+        # Parsing age and tier
+        age_tier = split_id[1].split('T')
+        age = age_tier[0]
+        if len(age_tier) == 2: tier = 'T' + age_tier[1]
+        else: tier = None
+
+        if len(split_id) == 4: # only four strings resulting from splut: no division
+            division = None
+            practice_num = int(split_id[3])
+        else: # six strings resulting from splut: division given
+            division = int(split_id[3])
+            practice_num = int(split_id[5])
+
+        return Practice(practice_id, association, age, tier, division, practice_num)
 
 
     def __parse_game_slot(self, game_slot_name: str) -> GameSlot:
@@ -301,7 +334,10 @@ class Parser:
         gamemax = int(split_line[2])
         gamemin = int(split_line[3])
         is_evening_slot = self.decide_if_evening_slot(start_time)
-        return GameSlot(weekday=weekday, start_time = start_time, gamemax=gamemax, gamemin=gamemin, is_evening_slot=is_evening_slot)
+
+        # TODO: compute end_time and use as input when creating a new game slot
+
+        return GameSlot(weekday=weekday, start_time=start_time, end_time="", gamemax=gamemax, gamemin=gamemin, is_evening_slot=is_evening_slot)
 
 
     def __parse_practice_slot(self, practice_slot_name: str) -> PracticeSlot:
@@ -312,7 +348,10 @@ class Parser:
         practicemax = int(split_line[2])
         practicemin = int(split_line[3])
         is_evening_slot = self.decide_if_evening_slot(start_time)
-        return PracticeSlot(weekday=weekday, start_time = start_time, practicemax=practicemax, practicemin=practicemin, is_evening_slot=is_evening_slot)
+
+        # TODO: compute end_time and use as input when creating a new game slot
+
+        return PracticeSlot(weekday=weekday, start_time = start_time, end_time="", practicemax=practicemax, practicemin=practicemin, is_evening_slot=is_evening_slot)
 
     def time_str_to_int(self, time_str: str) -> int:
         try:

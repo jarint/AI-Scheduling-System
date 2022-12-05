@@ -10,7 +10,7 @@ class Practice(Activity):
 
     ACTIVITY_TYPE = ActivityType.PRACTICE
 
-    def __init__(self, id: str, association: str, age: str, tier: str, division: int, prac: str):
+    def __init__(self, id: str, association: str, age: str, tier: str, division: int, prac: int):
         self.id = id
         self.association = association
         self.age = age

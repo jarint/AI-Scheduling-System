@@ -42,9 +42,9 @@ class Environment:
     ACTIVITY_ID_TO_OBJ = {} # maps activity id's to activity instances
     GAME_ID_TO_OBJ = {} # maps game id's to instances of Game class
     PRACTICE_ID_TO_OBJ = {} # maps practice id's to instances of Practice class
-    NOT_COMPATIBLE = {} # maps activity id's to sets of activity id's. Rather than storing pairs, 
+    NOT_COMPATIBLE = {} # maps activity id's to lists of activity id's. Rather than storing pairs, 
         # we can store the set of all incompatible activities for some given activity
-    UNWANTED = {} # games/pracices that cannot be assigned to certain slots.
+    UNWANTED = {} # lists of games/pracices that cannot be assigned to certain slots.
         # stored as a set of tuples, whose first element is an activity id, and second element is a slot id
     PREFERENCES = {} # maps activity id -> (slot_id, preference value)
     PAIR = {} # Games to be scheduled at the same time
@@ -119,9 +119,8 @@ class Environment:
 
         def params(shortcut: str):
             start_time, end_time = shortcut.split("-")
-            start_time_int = time_str_to_int(start_time)
-            is_evening_slot = decide_if_evening_slot(start_time_int)
-            return (start_time, end_time, is_evening_slot, None, None)
+            is_evening_slot = decide_if_evening_slot(start_time)
+            return (start_time, end_time, is_evening_slot, 0, 0)
 
 
         MO_GAME_SLOTS = [GameSlot(Weekday.MO, *params(shortcut)) for shortcut in MO_GAME_SLOT_SHORTCUTS]
@@ -212,15 +211,17 @@ class Environment:
         @staticmethod
         def add_game(game: Game):
             Environment.GAME_ID_TO_OBJ[game.id] = game
+            Environment.NOT_COMPATIBLE[game.id] = []
 
 
         @staticmethod
         def add_practice(practice: Practice):
             Environment.PRACTICE_ID_TO_OBJ[practice.id] = practice
+            Environment.NOT_COMPATIBLE[practice.id] = []
 
 
         @staticmethod
-        def add_not_compatible(activity1_id: str, activity2_id: str):
+        def add_not_compatible(activity1_id: str, activity2_id: str):                
             Environment.NOT_COMPATIBLE[activity1_id].append(activity2_id)
             Environment.NOT_COMPATIBLE[activity2_id].append(activity1_id)
 

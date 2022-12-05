@@ -48,6 +48,7 @@ class SearchModel:
             schedule = schedule.get_copy()
             activity_id, slot_id = assign
             schedule.assign_activity(activity_id, slot_id)
+            schedule.penalty = schedule.penalty + SoftConstraints.get_delta_penalty(schedule, assign)
             schedules.append(schedule)
 
         return schedules
