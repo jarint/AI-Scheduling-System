@@ -15,7 +15,6 @@ class Main:
     @staticmethod
     def main():
         Main.clear_log()
-        Environment.pre_parser_initialization()
         logging.basicConfig(filename='program_log.log', encoding='utf-8', level=logging.DEBUG)
         s = Scheduler()
         s.search()

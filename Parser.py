@@ -203,6 +203,8 @@ class Parser:
             print("======================")
             print(activity_id)
             print(Environment.ACTIVITY_IDS)
+            print(Environment.GAME_IDS)
+            print(Environment.PRACTICE_IDS)
             print("======================")
 
             if activity_id in Environment.GAME_IDS:
@@ -301,10 +303,6 @@ class Parser:
         # Splitting practice identifier
         split_id = practice_id.split(' ')
         split_id[:] = [x for x in split_id if x] # removing empty strings in case there were extra spaces
-
-        print("=======================================")
-        print(split_id)
-        print("=======================================")
 
         if not(len(split_id) == 4 or len(split_id) == 6): raise RuntimeError("Issue parsing practice '" + practice_id + "': split does not result in four or six elements")
 
