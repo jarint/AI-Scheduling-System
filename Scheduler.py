@@ -12,13 +12,12 @@ from Search.Environment import Environment
 class Scheduler:
 
     def __init__(self) -> None:
-        Environment.pre_parser_initialization()
-        self.parser: Parser = Parser()
-        Environment.post_parser_initialization()
+        pass
 
-    
     # start function internal methods start the search process
     def search(self):
         # internal methods start the scheduling process
         pass
+
+
 

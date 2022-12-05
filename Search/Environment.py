@@ -2,6 +2,10 @@
 This class represents the environment which will store things like user input and search parameters.
 '''
 
+import logging
+import pprint
+from contextlib import redirect_stdout
+
 from Enumerations import ActivityType, Weekday
 from ScheduleObjects.Game import Game
 from ScheduleObjects.Practice import Practice
@@ -55,18 +59,18 @@ class Environment:
 
     # <post-parser initialization>
 
-    ACTIVITY_IDS = []
-    GAME_IDS = []
-    PRACTICE_IDS = []
-    ALL_SLOT_IDS = []
-    PRACTICE_SLOT_IDS = []
-    GAME_SLOT_IDS = []
+    ACTIVITY_IDS = set()
+    GAME_IDS = set()
+    PRACTICE_IDS = set()
+    ALL_SLOT_IDS = set()
+    PRACTICE_SLOT_IDS = set()
+    GAME_SLOT_IDS = set()
 
-    MO_G_SLOTS_IDS = []
-    TU_G_SLOT_IDS = []
-    MO_P_SLOTS_IDS = []
-    TU_P_SLOT_IDS = []
-    FR_P_SLOT_IDS = []
+    MO_G_SLOTS_IDS = set()
+    TU_G_SLOT_IDS = set()
+    MO_P_SLOTS_IDS = set()
+    TU_P_SLOT_IDS = set()
+    FR_P_SLOT_IDS = set()
 
     # </post-parser initialization>
     
@@ -123,7 +127,6 @@ class Environment:
             is_evening_slot = decide_if_evening_slot(start_time)
             return (start_time, end_time, is_evening_slot, 0, 0)
 
-
         MO_GAME_SLOTS = [GameSlot(Weekday.MO, *params(shortcut)) for shortcut in MO_GAME_SLOT_SHORTCUTS]
         TU_GAME_SLOTS = [GameSlot(Weekday.TU, *params(shortcut)) for shortcut in TU_GAME_SLOT_SHORTCUTS]
         MO_PRACTICE_SLOTS = [PracticeSlot(Weekday.MO, *params(shortcut)) for shortcut in MO_PRACTICE_SLOT_SHORTCUTS]
@@ -131,9 +134,7 @@ class Environment:
         FR_PRACTICE_SLOTS = [PracticeSlot(Weekday.FR, *params(shortcut)) for shortcut in FR_PRACTICE_SLOT_SHORTCUTS]
 
         ACTIVITY_SLOTS = MO_GAME_SLOTS + TU_GAME_SLOTS + MO_PRACTICE_SLOTS + TU_PRACTICE_SLOTS + FR_PRACTICE_SLOTS
-
-        # TODO: This doesn't work. Not sure why it is 'activity in ACTIVITY_SLOTS'
-        Environment.ACTIVITY_ID_TO_OBJ = {activity.id: activity for activity in ACTIVITY_SLOTS}
+        Environment.SLOT_ID_TO_OBJ = {slot.id: slot for slot in ACTIVITY_SLOTS}
 
         Environment.GAME_SLOT_ID_TO_OBJ = {slot_id: Environment.SLOT_ID_TO_OBJ[slot_id] for slot_id in
             filter(lambda id: id[0] == ActivityType.GAME, Environment.SLOT_ID_TO_OBJ)
@@ -143,30 +144,32 @@ class Environment:
             filter(lambda id: id[0] == ActivityType.PRACTICE, Environment.SLOT_ID_TO_OBJ)
         }
 
-        Environment.ALL_SLOT_IDS = [slot_id for slot_id in Environment.SLOT_ID_TO_OBJ]
-        Environment.PRACTICE_SLOT_IDS = [slot_id for slot_id in Environment.PRACTICE_SLOT_ID_TO_OBJ]
-        Environment.GAME_SLOT_IDS = [slot_id for slot_id in Environment.GAME_SLOT_ID_TO_OBJ]
+        Environment.ALL_SLOT_IDS = {slot_id for slot_id in Environment.SLOT_ID_TO_OBJ}
+        Environment.PRACTICE_SLOT_IDS = {slot_id for slot_id in Environment.PRACTICE_SLOT_ID_TO_OBJ}
+        Environment.GAME_SLOT_IDS = {slot_id for slot_id in Environment.GAME_SLOT_ID_TO_OBJ}
 
-        Environment.MO_G_SLOTS_IDS = [slot_id for slot_id in 
+        Environment.MO_G_SLOTS_IDS = {slot_id for slot_id in 
             filter(lambda id: id[0] == ActivityType.GAME 
             and id[1] == Weekday.MO, Environment.ALL_SLOT_IDS)
-        ]
-        Environment.TU_G_SLOT_IDS = [slot_id for slot_id in 
+        }
+        Environment.TU_G_SLOT_IDS = {slot_id for slot_id in 
             filter(lambda id: id[0] == ActivityType.GAME 
             and id[1] == Weekday.TU, Environment.ALL_SLOT_IDS)
-        ]
-        Environment.MO_P_SLOTS_IDS = [slot_id for slot_id in 
+        }
+        Environment.MO_P_SLOTS_IDS = {slot_id for slot_id in 
             filter(lambda id: id[0] == ActivityType.PRACTICE 
             and id[1] == Weekday.MO, Environment.ALL_SLOT_IDS)
-        ]
-        Environment.TU_P_SLOT_IDS = [slot_id for slot_id in 
+        }
+        Environment.TU_P_SLOT_IDS = {slot_id for slot_id in 
             filter(lambda id: id[0] == ActivityType.PRACTICE
             and id[1] == Weekday.TU, Environment.ALL_SLOT_IDS)
-        ]
-        Environment.FR_P_SLOT_IDS = [slot_id for slot_id in 
+        }
+        Environment.FR_P_SLOT_IDS = {slot_id for slot_id in 
             filter(lambda id: id[0] == ActivityType.PRACTICE 
             and id[1] == Weekday.FR, Environment.ALL_SLOT_IDS)
-        ]
+        }
+
+        # <overlaps>
 
         for slot_a_id in Environment.ALL_SLOT_IDS:
             slot_a_obj = Environment.SLOT_ID_TO_OBJ[slot_a_id]
@@ -180,15 +183,21 @@ class Environment:
                     slot_a_obj.weekday == slot_b_obj.weekday
                     and not (slot_a_start >= slot_b_end or slot_a_end <= slot_b_start)
                 ):
-                    slot_a_obj.overlaps.append(slot_b_id)
-                    slot_b_obj.overlaps.append(slot_a_id)
+                    slot_a_obj.overlaps.add(slot_b_id)
+                    slot_b_obj.overlaps.add(slot_a_id)
 
+        # </overlaps>
 
     @staticmethod
-    def post_parser_initialization(): 
-        Environment.ACTIVITY_IDS = [activity_id for activity_id in Environment.ACTIVITY_ID_TO_OBJ]
-        Environment.GAME_IDS = [game_id for game_id in Environment.GAME_ID_TO_OBJ]
-        Environment.PRACTICE_IDS = [practice_id for practice_id in Environment.PRACTICE_ID_TO_OBJ]
+    def post_parser_initialization():
+        logging.debug("\n" * 5)
+        logging.debug("<environment data>")
+        with open('program_log.log', 'a') as f:
+            with redirect_stdout(f):
+                pprint.pprint(vars(Environment))
+        logging.debug("</environment data>")
+        logging.debug("\n" * 5)
+
 
 
     class Adders:
@@ -197,43 +206,55 @@ class Environment:
         def update_name(name: str):
             Environment.NAME = name
 
+        # NOTE these slot adders are no longer needed because all creation of slots happens in Environment.pre_parser_initialization()
+            # for this reason there is no longer a parse_practice_slot or parse_game_slot method, which simply returned instances of slots.
+            # there are still parse_game_slot(s) and parse_practice_slot(s) methods, whose only purposes are to update gamemax, gamemin, practicemax, practicemin
 
-        @staticmethod
-        def add_game_slot(game_slot: GameSlot):
-            Environment.GAME_SLOT_ID_TO_OBJ[game_slot.id] = game_slot
-            Environment.GAME_SLOT_IDS.append(game_slot.id)
+        # @staticmethod
+        # def add_game_slot(game_slot: GameSlot):
+        #     Environment.GAME_SLOT_ID_TO_OBJ[game_slot.id] = game_slot
+        #     Environment.GAME_SLOT_IDS.add(game_slot.id)
         
 
-        @staticmethod
-        def add_practice_slot(practice_slot: PracticeSlot):
-            Environment.PRACTICE_SLOT_ID_TO_OBJ[practice_slot.id] = practice_slot
-            Environment.PRACTICE_SLOT_IDS.append(practice_slot)
+        # @staticmethod
+        # def add_practice_slot(practice_slot: PracticeSlot):
+        #     Environment.PRACTICE_SLOT_ID_TO_OBJ[practice_slot.id] = practice_slot
+        #     Environment.PRACTICE_SLOT_IDS.add(practice_slot)
         
 
         @staticmethod
         def add_game(game: Game):
+            Environment.ACTIVITY_ID_TO_OBJ[game.id] = game
+            Environment.ACTIVITY_IDS.add(game.id)
             Environment.GAME_ID_TO_OBJ[game.id] = game
-            Environment.NOT_COMPATIBLE[game.id] = []
+            Environment.GAME_IDS.add(game.id)
+            Environment.NOT_COMPATIBLE[game.id] = set()
 
 
         @staticmethod
         def add_practice(practice: Practice):
+            Environment.ACTIVITY_ID_TO_OBJ[practice.id] = practice
+            Environment.ACTIVITY_IDS.add(practice.id)
             Environment.PRACTICE_ID_TO_OBJ[practice.id] = practice
-            Environment.NOT_COMPATIBLE[practice.id] = []
+            Environment.PRACTICE_IDS.add(practice.id)
+            Environment.NOT_COMPATIBLE[practice.id] = set()
 
 
         @staticmethod
         def add_not_compatible(activity1_id: str, activity2_id: str):                
-            Environment.NOT_COMPATIBLE[activity1_id].append(activity2_id)
-            Environment.NOT_COMPATIBLE[activity2_id].append(activity1_id)
+            Environment.NOT_COMPATIBLE[activity1_id].add(activity2_id)
+            Environment.NOT_COMPATIBLE[activity2_id].add(activity1_id)
 
 
         @staticmethod
         def add_unwanted(activity_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
-            Environment.UNWANTED[activity_id].append(slot_id)
+            if activity_id not in Environment.UNWANTED:
+                Environment.UNWANTED[activity_id] = set()
+            Environment.UNWANTED[activity_id].add(slot_id)
+
 
         @staticmethod
-        def add_preference(preference: "tuple[tuple[ActivityType, Weekday, str], str, int]"):
+        def add_preference(preference: "tuple[str, tuple[ActivityType, Weekday, str], int]"):
             activity_id, slot_id, pref_value = preference
             Environment.PREFERENCES[activity_id] = (slot_id, pref_value)
 
