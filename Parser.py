@@ -152,8 +152,8 @@ class Parser:
         logging.debug("  __parse_practice_slots")
         while (self.__next_line() is not None):
             line = self.line_str
-            practice = self.__parse_practice_id(line)
-            Environment.Adders.add_practice(practice)
+            practice = self.__parse_practice_slot(line)
+            Environment.Adders.add_practice_slot(practice)
 
 
     # TODO: U13T1S won't actually be given in the input, but rather, we should infer its existence if U13T1 is given as input
@@ -199,6 +199,12 @@ class Parser:
         while (self.__next_line() is not None):
             line = self.line_str
             activity_id, date, time = re.split(self.COMMA_REGEX, line)
+
+            print("======================")
+            print(activity_id)
+            print(Environment.ACTIVITY_IDS)
+            print("======================")
+
             if activity_id in Environment.GAME_IDS:
                 activity_type = ActivityType.GAME
             elif activity_id in Environment.PRACTICE_IDS:
@@ -268,7 +274,7 @@ class Parser:
         elif activity_type == ActivityType.PRACTICE:
             return self.__parse_practice_id(activity_id)
         else:
-            raise Exception("invalid activity type")
+            raise Exception("Invalid activity type in Parser.__parse_activity_id()")
 
 
     def __parse_game_id(self, game_id: str) -> Game:
@@ -296,7 +302,11 @@ class Parser:
         split_id = practice_id.split(' ')
         split_id[:] = [x for x in split_id if x] # removing empty strings in case there were extra spaces
 
-        if not(len(split_id) == 4 or len(split_id) == 6): raise RuntimeError("Issue parsing practice '" + game_id + "': split does not result in four or six elements")
+        print("=======================================")
+        print(split_id)
+        print("=======================================")
+
+        if not(len(split_id) == 4 or len(split_id) == 6): raise RuntimeError("Issue parsing practice '" + practice_id + "': split does not result in four or six elements")
 
         association = split_id[0]
 
@@ -314,11 +324,6 @@ class Parser:
             practice_num = int(split_id[5])
 
         return Practice(practice_id, association, age, tier, division, practice_num)
-
-
-
-    def __parse_activity_slot(self, activity_slot_name: str) -> ActivitySlot:
-        pass
 
 
     def __parse_game_slot(self, game_slot_name: str) -> GameSlot:
