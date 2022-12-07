@@ -18,7 +18,7 @@ class Schedule:
         self.latest_assignment = None # (activity id, slot id)
         self.remaining_games = [] # TODO: needs to initialized to be the entire set of games
         self.remaining_practices = [] # TODO: needs to be initialized to be the entire set of practices
-        self.penalty = 0
+        self.eval = 0
 
     
     def get_copy(self):

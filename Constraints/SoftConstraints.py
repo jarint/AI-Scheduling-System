@@ -22,38 +22,31 @@ class SoftConstraints:
 
 
     @staticmethod
-    def get_delta_penalty(schedule: Schedule, latest_assignment: tuple) -> int:
-        activity_type = latest_assignment[1][0]
-        delta_penalty = 0
+    def get_delta_eval(schedule: Schedule, latest_assignment: tuple) -> int:
+        delta_eval_minfilled_games = SoftConstraints.GeneralConstraints.game_min(schedule, latest_assignment) * Environment.W_MINFILLED
+        delta_eval_minfilled_practices = SoftConstraints.GeneralConstraints.practice_min(schedule, latest_assignment) * Environment.W_MINFILLED
+        delta_eval_pref = SoftConstraints.GeneralConstraints.preference(schedule, latest_assignment) * Environment.W_PREF
+        delta_eval_pair = SoftConstraints.GeneralConstraints.pair(schedule, latest_assignment) * Environment.W_PAIR
+        delta_eval_secdiff = SoftConstraints.check_city_constraint(schedule, latest_assignment) * Environment.W_SECDIFF
 
-        if (activity_type == ActivityType.GAME):
-            delta_penalty = delta_penalty + SoftConstraints.GeneralConstraints.check_game_constraints(schedule, latest_assignment)
-        elif (activity_type == ActivityType.PRACTICE):
-            delta_penalty = delta_penalty + SoftConstraints.GeneralConstraints.check_practice_constraints(schedule, latest_assignment)
-        else:
-            raise TypeError("Activity given to 'check_constraints' method in SoftConstraints must be either of type 'Game' or type 'Practice'")
-        delta_penalty = delta_penalty + SoftConstraints.check_city_constraint()
-        return delta_penalty
+        return sum(
+            delta_eval_minfilled_games,
+            delta_eval_minfilled_practices,
+            delta_eval_pref,
+            delta_eval_pair,
+            delta_eval_secdiff
+        )
     
     
     class GeneralConstraints:
 
         @staticmethod
-        def check_game_constraints(schedule: Schedule, latest_assignment: tuple):
-            # TODO not sure if this method needs to exist
-            pass
-
-
-        @staticmethod
-        def check_practice_constraints(schedule: Schedule, latest_assignment: tuple):
-            # TODO not sure if this method needs to exist
-            pass
-
-
-        @staticmethod
         def game_min(schedule: Schedule, latest_assignment: tuple) -> int:
             activity_id, slot_id = latest_assignment
-            slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+            activity_type = slot_id[0]
+            if activity_type == ActivityType.PRACTICE:
+                return 0
+            slot_obj = Environment.GAME_SLOT_ID_TO_OBJ[slot_id]
             penatly_included = len(schedule.assignments[slot_id]) < slot_obj.gamemin
             delta_penalty = 0
             if penatly_included:
@@ -64,7 +57,10 @@ class SoftConstraints:
         @staticmethod
         def practice_min(schedule: Schedule, latest_assignment: tuple) -> int:
             activity_id, slot_id = latest_assignment
-            slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+            activity_type = slot_id[0]
+            if activity_type == ActivityType.GAME:
+                return 0
+            slot_obj = Environment.PRACTICE_SLOT_ID_TO_OBJ[slot_id]
             penalty_included = len(schedule.assignments[slot_id]) < slot_obj.practicemin
             delta_penalty = 0
             if penalty_included:
@@ -76,10 +72,12 @@ class SoftConstraints:
         def preference(schedule: Schedule, latest_assignment: tuple) -> int:
             activity_id, slot_id = latest_assignment
             delta_penalty = 0
-            if activity_id in Environment.PREFERENCES:
-                pref_slot_id, preference = Environment.PREFERENCES[activity_id]
-                if slot_id != pref_slot_id:
-                    delta_penalty = preference
+
+            for preference in Environment.PREFERENCES[activity_id]:
+                pref_slot_id, pref_value = preference
+                if slot_id == pref_slot_id:
+                    delta_penalty -= pref_value
+            
             return delta_penalty
 
 
@@ -100,11 +98,14 @@ class SoftConstraints:
     @staticmethod
     def check_city_constraint(schedule: Schedule, latest_assignment: tuple) -> int:
         activity_id, slot_id = latest_assignment
+        activity_type = slot_id[0]
+        if activity_type == ActivityType.PRACTICE:
+            return 0
         delta_penalty = 0
-        activity_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
+        activity_obj = Environment.GAME_ID_TO_OBJ[activity_id]
         age, tier = activity_obj.age, activity_obj.tier
         for act_id in schedule.assignments[slot_id]:
-            act_obj = Environment.ACTIVITY_ID_TO_OBJ[act_id]
+            act_obj = Environment.GAME_ID_TO_OBJ[act_id]
             a, t = act_obj.age, act_obj.tier
             if a == age and t == tier:
                 delta_penalty += Environment.PEN_SECTION

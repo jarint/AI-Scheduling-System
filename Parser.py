@@ -236,17 +236,15 @@ class Parser:
 
     def __parse_preferences(self) -> None:
         logging.debug("  __parse_preferences")
+        for activity_id in Environment.ACTIVITY_IDS:
+            Environment.PREFERENCES[activity_id] = set()
+
+
         while (self.__next_line() is not None):
             line = self.line_str
             preference = self.__parse_preference(line)
             activity_id, slot_id, pref_value = preference
             Environment.Adders.add_preference(preference)
-        
-        # assign default value of 0 if unspecified
-        for slot_id in Environment.ALL_SLOT_IDS:
-            for activity_id in Environment.ACTIVITY_IDS:
-                if activity_id not in Environment.PREFERENCES:
-                    Environment.PREFERENCES[activity_id] = (slot_id, 0)
 
 
     def __parse_pairs(self) -> None:

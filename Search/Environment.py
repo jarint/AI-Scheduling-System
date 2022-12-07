@@ -50,7 +50,7 @@ class Environment:
         # we can store the set of all incompatible activities for some given activity
     UNWANTED = {} # lists of games/pracices that cannot be assigned to certain slots.
         # stored as a set of tuples, whose first element is an activity id, and second element is a slot id
-    PREFERENCES = {} # maps activity id -> (slot_id, preference value)
+    PREFERENCES = {} # maps activity id -> to set of tuples (slot_id, preference value)
     PAIR = {} # Games to be scheduled at the same time
         # maps activity id to a set of activity id's
     PARTASSIGN = {} # Hard Constraint. To be scheduled immediately. Maps activity id to slot id
@@ -256,7 +256,7 @@ class Environment:
         @staticmethod
         def add_preference(preference: "tuple[str, tuple[ActivityType, Weekday, str], int]"):
             activity_id, slot_id, pref_value = preference
-            Environment.PREFERENCES[activity_id] = (slot_id, pref_value)
+            Environment.PREFERENCES[activity_id].add((slot_id, pref_value))
 
 
         @staticmethod
