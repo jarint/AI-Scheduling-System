@@ -72,7 +72,17 @@ class Environment:
     TU_P_SLOT_IDS = set()
     FR_P_SLOT_IDS = set()
 
-    # </post-parser initialization>
+    
+    def display_parsed_data():
+        print("Game IDs: " + str(Environment.GAME_IDS))
+        print("Practice IDs: " + str(Environment.PRACTICE_IDS))
+        print()
+        print("\nNot compatible: " + str(Environment.NOT_COMPATIBLE))
+        print("\nUnwanted: " + str(Environment.UNWANTED))
+        print("\nPreferences: " + str(Environment.NOT_COMPATIBLE))
+        print("\nPair: " + str(Environment.PAIR))
+        print("\nPartial assignments: " + str(Environment.PARTASSIGN))
+
     
     # to iterate over the game or practice slots on a given day
         # for slot_id in MO_G_SLOTS:

@@ -20,6 +20,7 @@ class Node:
         if self.parent != None:
             self.compute_opt()
 
+
     def check_sol(self):
         if not self.is_leaf():
             sol = True
@@ -31,8 +32,13 @@ class Node:
                 self.sol = True
                 self.parent.check_sol()
         
-         # TODO if this is a leaf node, we'll also need a way to evaluate sol
-
+        # If node is a leaf, we must check if its schedule is complete
+        else:
+            if (len(self.pr.remaining_games) == 0) and (len(self.pr.remaining_practices) == 0):
+                self.sol = True
+                self.parent.check_sol()
+            self.sol = False
+        
 
     def compute_opt(self):
         latest_id, latest_slot_id = self.pr.latest_assignment
@@ -56,15 +62,12 @@ class Node:
 
 
 class Tree:
-    current_stack = []
-
     # Empty constructor (TODO)
     def __init__(self) -> None:
         self.root = Node(None, Schedule(), False)
-        Tree.current_stack.append(self.root)
 
 
-    def erw(self, parent_node: Node):
+    def expand(self, parent_node: Node):
         for schedule in SearchModel.div(parent_node.pr):
             parent_node.add_child(parent_node, schedule, False)
 
@@ -74,7 +77,5 @@ class Tree:
             raise(RuntimeError("fleaf attempting to choose child from parent with no children"))
 
         # Sorting children by Opt values
-        parent_node.children.sort(key=lambda x: x.opt)
-
-        # Choosing leftmost child
-        return parent_node.children[0]
+        # Note that it is sorting in reverse order (using -)
+        parent_node.children.sort(key=lambda x: -(x.opt))

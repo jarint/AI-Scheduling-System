@@ -24,8 +24,15 @@ class Main:
         Environment.post_parser_initialization()
         
         s = Scheduler()
-        s.search()
-    
+        optimal_solution = s.search()
+        
+        if optimal_solution == None:
+            print("No solution was found!")
+        else:
+            print("Solution: " + str(optimal_solution.pr.assignments))
+
+        # print("Eval-value: " + str(optimal_solution))
+        # print(...)    
     
     @staticmethod
     def clear_log():

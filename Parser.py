@@ -178,8 +178,7 @@ class Parser:
 
             if ((game.age == "U12" or game.age == "U13") and game.tier == "T1"):
                 special_game = copy.deepcopy(game)
-                special_game.id = special_game.id + "S"
-                special_game.division = None
+                special_game.id = game.association + ' ' + game.age + game.tier + "S"
                 Environment.Adders.add_game(special_game)
             
 
