@@ -10,13 +10,13 @@ class Practice(Activity):
 
     ACTIVITY_TYPE = ActivityType.PRACTICE
 
-    def __init__(self, id: str, association: str, age: str, tier: str, division: int, prac: int):
+    def __init__(self, id: str, association: str, age: str, tier: str, division: int, practice_num: int):
         self.id = id
         self.association = association
         self.age = age
         self.tier = tier
-        self.division = division 
-        self.prac = prac
+        self.division = division
+        self.practice_num = practice_num
     
 
     def get_id(self):

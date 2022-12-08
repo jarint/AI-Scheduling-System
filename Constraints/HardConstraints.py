@@ -92,13 +92,28 @@ class HardConstraints:
             slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
             overlapping_slots = slot_obj.overlaps
             activity_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
+            type_a = activity_obj.activity_type
+
             for overlapping_slot in overlapping_slots:
                 for act_id in schedule.assignments[overlapping_slot]:
                     act_obj = Environment.ACTIVITY_ID_TO_OBJ[act_id]
-                    if activity_obj.activity_type == act_obj.activity_type:
+                    type_b = act_obj.activity_type
+                    if type_a == ActivityType.PRACTICE and type_b == ActivityType.PRACTICE:
                         continue
-                    if activity_obj.division == act_obj.division:
+                    
+                    # TODO unsure of which implementation is correct
+                    # implementation version 1 
+                    same_assoc = (activity_obj.association == act_obj.association)
+                    same_age = (activity_obj.age == act_obj.age)
+                    same_tier = (activity_obj.tier == act_obj.tier)
+                    same_division = (activity_obj.division == act_obj.division)
+                    if same_assoc and same_age and same_tier and same_division:
                         return False
+
+                    # implementation version 2
+                    # if activity_obj.division == act_obj.division:
+                    #     return False
+
             return True
 
 
@@ -151,7 +166,7 @@ class HardConstraints:
             else: # activity is a practice
                 passes = True
 
-            if not(Environment.ACTIVITY_ID_TO_OBJ[activity_id].division == None):
+            if Environment.ACTIVITY_ID_TO_OBJ[activity_id].division is not None:
                 passes = passes and HardConstraints.CityConstraints.evening_slot_constraint(schedule, assignment)
 
             # The additional constraints below are checked whether the activity is a game or a practice
@@ -162,7 +177,7 @@ class HardConstraints:
         def evening_slot_constraint(schedule: Schedule, assignment: tuple) -> bool:
             activity_id, slot_id = assignment
             activity_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
-            if (activity_obj.get_division() == 9):
+            if (activity_obj.division == 9): # TODO may not only be division 9, but divisions that start with 9
                 return not Parser.decide_if_evening_slot(slot_id[2])
             else:
                 return False
@@ -170,25 +185,42 @@ class HardConstraints:
 
         @staticmethod
         def age_group_constraint(schedule: Schedule, assignment: tuple) -> bool:
+            MUTEX_AGES = {"U15", "U16", "U17", "U19"}
+
             activity_id, slot_id = assignment
-            for activity in Schedule.get_activities_in_slot(slot_id):
-                if (Environment.ACTIVITY_ID_TO_OBJ[activity_id].get_age() == Environment.ACTIVITY_ID_TO_OBJ[activity].get_age()):
-                    return True
-            return False
+            activity_type = slot_id[0]
+            if activity_type != ActivityType.GAME:
+                return True # this hard constraint only involves games
+            
+            age_a = Environment.GAME_ID_TO_OBJ[activity_id].age
+            if age_a not in MUTEX_AGES:
+                return True
+
+            for act_id in schedule.assignments[slot_id]:
+                if act_id == activity_id:
+                    continue
+                
+                age_b = Environment.GAME_ID_TO_OBJ[act_id].age
+                if age_b in MUTEX_AGES:
+                    return False
+            
+            return True
 
 
-        # May be better to include the Tuesday meeting slot, but assign it a game min/max of 0
-        @staticmethod
-        def meeting_constraint(schedule: Schedule, assignment: tuple) -> bool:
-            activity_id, slot_id = assignment
-            activity_type, weekday, start_time = slot_id
-            if weekday != Weekday.TU:
-                return True
-            if start_time not in ["11:00", "12:00"]:
-                return True
-            if len(schedule.assignments[slot_id]) == 0:
-                return True
-            return False
+        # NOTE May be better to include the Tuesday meeting slot, but assign it a game min/max of 0
+            # this is now in Environment.post_parser_initialization()
+
+        # @staticmethod
+        # def meeting_constraint(schedule: Schedule, assignment: tuple) -> bool:
+        #     activity_id, slot_id = assignment
+        #     activity_type, weekday, start_time = slot_id
+        #     if weekday != Weekday.TU:
+        #         return True
+        #     if start_time not in ["11:00", "12:00"]:
+        #         return True
+        #     if len(schedule.assignments[slot_id]) == 0:
+        #         return True
+        #     return False
         
 
         # TODO: May be issues with this constraint and it may be incomplete.
@@ -200,13 +232,40 @@ class HardConstraints:
             # The parser will implement this
             # If we parse U13T1 as an input game, then we will also add its special counterpart as a game
                 # The same applies to U12T1
+
+        # NOTE issue resolved 
+            # the way I have it implemented now is that they are games placed in practice slots
+
         @staticmethod
         def special_bookings_constraint(schedule: Schedule, assignment: tuple) -> bool:
             activity_id, slot_id = assignment
-            if activity_id not in Environment.SPECIAL_PRACTICE_BOOKINGS:
-                return True
+            act_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
+
+            if act_obj.ACTIVITY_TYPE != ActivityType.GAME:
+                return True # this constraint doesn't apply to practices
+
+            association, age, tier = act_obj.association, act_obj.age, act_obj.tier
+
+            if association != "CMSA" or age not in {"U12", "U13"} or tier != "T1":
+                return True # constraint doesn't apply to this given game
+
+
+            if activity_id in Environment.SPECIAL_BOOKINGS:
+                if slot_id == Environment.SPECIAL_BOOKINGS[activity_id]:
+                    return True
+                
+                return False
             
-            if slot_id == (ActivityType.PRACTICE, Weekday.TU, "18:00"):
+            # at this point in the hard constraint check, we've narrowed it down that we're dealing with a game
+            # that isn't one of the special games, but shares the association, age and tier of one of them.
+            if age == "U12":
+                if "CMSA U12T1S" in schedule.assignments[slot_id]:
+                    return False
+                return True
+            elif age == "U13":
+                if "CMSA U13T1S" in schedule.assignments[slot_id]:
+                    return False
                 return True
             else:
-                return False
+                raise Exception("age should be one of U12 or U13 at this point in the hard constraint check")
+                        

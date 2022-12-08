@@ -97,16 +97,27 @@ class SoftConstraints:
 
     @staticmethod
     def check_city_constraint(schedule: Schedule, latest_assignment: tuple) -> int:
+
         activity_id, slot_id = latest_assignment
         activity_type = slot_id[0]
-        if activity_type == ActivityType.PRACTICE:
-            return 0
+
+        if activity_type != ActivityType.GAME:
+            return 0 # this constraint only applies to games
+        
         delta_penalty = 0
         activity_obj = Environment.GAME_ID_TO_OBJ[activity_id]
-        age, tier = activity_obj.age, activity_obj.tier
+        age, tier, association = activity_obj.age, activity_obj.tier, activity_obj.association
         for act_id in schedule.assignments[slot_id]:
             act_obj = Environment.GAME_ID_TO_OBJ[act_id]
-            a, t = act_obj.age, act_obj.tier
-            if a == age and t == tier:
+            a, t, assoc = act_obj.age, act_obj.tier, act_obj.assoc
+
+            # TODO not sure which implementation to use
+            # implementation version 1
+            if a == age and t == tier and assoc == association:
                 delta_penalty += Environment.PEN_SECTION
+
+            # implementation version 2
+            # if a == age and t == tier:
+            #     delta_penalty += Environment.PEN_SECTION
+            
         return delta_penalty

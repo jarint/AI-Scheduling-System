@@ -8,6 +8,7 @@ import sys
 import logging
 import os
 import re
+import copy
 
 from Search.Environment import Environment
 from Enumerations import ActivityType, Weekday
@@ -17,8 +18,6 @@ from ScheduleObjects.Practice import Practice
 from ScheduleObjects.GameSlot import GameSlot
 from ScheduleObjects.PracticeSlot import PracticeSlot
 from Enumerations import EnumValueToObjMaps
-
-from copy import deepcopy
 
 
 class Parser:
@@ -178,20 +177,14 @@ class Parser:
             Environment.Adders.add_game(game)
 
             if ((game.age == "U12" or game.age == "U13") and game.tier == "T1"):
-                special_game = deepcopy(game)
+                special_game = copy.deepcopy(game)
                 special_game.id = special_game.id + "S"
-                Environment.Adders.add_practice(Practice(game.association + " " + game.age + game.tier + "S", game.association, game.age, game.tier, game.division, None))
-
+                special_game.division = None
+                Environment.Adders.add_game(special_game)
+            
 
     def __parse_practices(self) -> None:
         logging.debug("  __parse_practices")
-
-        # special bookings (this is a city of calgary hard constraint that requires these special practices)
-        special_a = Practice("CMSA U12T1S", "CMSA", "U12", "1", None, None)
-        special_b = Practice("CMSA U13T1S", "CMSA", "U13", "1", None, None)
-        Environment.Adders.add_practice(special_a)
-        Environment.Adders.add_practice(special_b)
-
         while (self.__next_line() is not None):
             line = self.line_str
             practice = self.__parse_practice_id(line)
@@ -209,13 +202,6 @@ class Parser:
         while (self.__next_line() is not None):
             line = self.line_str
             activity_id, date, time = re.split(self.COMMA_REGEX, line)
-
-            # print("======================")
-            # print(activity_id)
-            # print(Environment.ACTIVITY_IDS)
-            # print(Environment.GAME_IDS)
-            # print(Environment.PRACTICE_IDS)
-            # print("======================")
 
             if activity_id in Environment.GAME_IDS:
                 activity_type = ActivityType.GAME
@@ -244,7 +230,13 @@ class Parser:
             line = self.line_str
             preference = self.__parse_preference(line)
             activity_id, slot_id, pref_value = preference
-            Environment.Adders.add_preference(preference)
+            if activity_id in Environment.ACTIVITY_IDS:
+                Environment.Adders.add_preference(preference)
+            else:
+                # NOTE in the preferences section of the input, there may be activity id's that 
+                # are not listed in the "games" or "practices" sections.
+                # In these cases, we may ignore the preference.
+                print("NOTE: a preference listing has appeared for an activity that does not exist. This is not a bug and can be safely ignored.")
 
 
     def __parse_pairs(self) -> None:
@@ -322,10 +314,10 @@ class Parser:
         if len(age_tier) == 2: tier = 'T' + age_tier[1]
         else: tier = None
 
-        if len(split_id) == 4: # only four strings resulting from splut: no division
+        if len(split_id) == 4: # only four strings resulting from split: no division
             division = None
             practice_num = int(split_id[3])
-        else: # six strings resulting from splut: division given
+        else: # six strings resulting from split: division given
             division = int(split_id[3])
             practice_num = int(split_id[5])
 
@@ -347,7 +339,7 @@ class Parser:
     
 
     def decide_activity_type(self, activity_id: str) -> ActivityType:
-        for phrase in ["PRC", "OPN", "CMSA U12T1S", "CMSA U13T1S"]:
+        for phrase in ["PRC", "OPN"]:
             if phrase in activity_id:
                 return ActivityType.PRACTICE
         

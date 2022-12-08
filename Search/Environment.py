@@ -16,7 +16,7 @@ class Environment:
 
     # <pre-parser initialization>
 
-    SPECIAL_PRACTICE_BOOKINGS = {
+    SPECIAL_BOOKINGS = {
         "CMSA U12T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00"), 
         "CMSA U13T1S": (ActivityType.PRACTICE, Weekday.TU, "18:00")
     }
@@ -190,6 +190,22 @@ class Environment:
 
     @staticmethod
     def post_parser_initialization():
+
+        # NOTE these are for the admin meeting hard constraint
+        slot_a_id = (ActivityType.GAME, Weekday.TU, "11:00")
+        slot_b_id = (ActivityType.PRACTICE, Weekday.TU, "11:00")
+        slot_c_id = (ActivityType.PRACTICE, Weekday.TU, "12:00")
+        slot_a = Environment.SLOT_ID_TO_OBJ[slot_a_id]
+        slot_b = Environment.SLOT_ID_TO_OBJ[slot_b_id]
+        slot_c = Environment.SLOT_ID_TO_OBJ[slot_c_id]
+        slot_a.gamemin = 0
+        slot_a.gamemax = 0
+        slot_b.gamemin = 0
+        slot_b.gamemax = 0
+        slot_c.gamemin = 0
+        slot_c.gamemax = 0
+
+
         logging.debug("\n" * 5)
         logging.debug("<environment data>")
         with open('program_log.log', 'a') as f:
