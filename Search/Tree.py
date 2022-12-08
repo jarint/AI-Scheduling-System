@@ -22,6 +22,8 @@ class Node:
 
 
     def check_sol(self):
+        if self.parent == None: return
+        
         if not self.is_leaf():
             sol = True
             for child in self.children:

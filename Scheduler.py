@@ -36,6 +36,7 @@ class Scheduler:
         
         # Adding children to node
         self.tree.expand(node)
+        node.check_sol()
 
         # Sorting children in reverse order
         if len(node.children) > 0:

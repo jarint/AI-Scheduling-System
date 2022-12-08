@@ -32,7 +32,7 @@ class Main:
             print("Solution: " + str(optimal_solution.pr.assignments))
 
         # print("Eval-value: " + str(optimal_solution))
-        # print(...)    
+        # print(...)
     
     @staticmethod
     def clear_log():
