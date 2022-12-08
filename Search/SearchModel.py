@@ -5,7 +5,6 @@ from Constraints.SoftConstraints import SoftConstraints
 from Search.Environment import Environment
 
 class SearchModel:
-
     @staticmethod
     def div(schedule: Schedule):
         """
