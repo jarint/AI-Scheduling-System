@@ -16,7 +16,7 @@ class Main:
     @staticmethod
     def main():
         Main.clear_log()
-        logging.basicConfig(filename='program_log.log', encoding='utf-8', level=logging.DEBUG)
+        logging.basicConfig(filename="program_log.log", level=logging.DEBUG)
 
         Environment.pre_parser_initialization()
         parser = Parser()
