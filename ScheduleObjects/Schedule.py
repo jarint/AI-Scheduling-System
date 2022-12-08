@@ -14,9 +14,11 @@ class Schedule:
 
     def __init__(self) -> None:
         self.assignments = {slot_id: set() for slot_id in Environment.ALL_SLOT_IDS}
-        self.latest_assignment = None
+        self.slot_of_each_activity = {} # maps from activity id to slot id to represent which slot each activity is scheduled to
+        self.latest_assignment = None # (activity id, slot id)
         self.remaining_games = [] # TODO: needs to initialized to be the entire set of games
         self.remaining_practices = [] # TODO: needs to be initialized to be the entire set of practices
+        self.eval = 0
 
     
     def get_copy(self):
@@ -43,11 +45,13 @@ class Schedule:
 
     def assign_game(self, game_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
         self.assignments[slot_id].add(game_id)
+        self.slot_of_each_activity[game_id] = slot_id
         self.latest_assignment = (game_id, slot_id)
         self.remaining_games.remove(game_id) # if this line causes errors, maybe try a reassignment
 
 
     def assign_practice(self, practice_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
         self.assignments[slot_id].add(practice_id)
+        self.slot_of_each_activity[practice_id] = slot_id
         self.latest_assignment = (practice_id, slot_id)
-        self.remaining_games.remove(practice_id) # if this line causes errors, maybe try a reassignment
+        self.remaining_practices.remove(practice_id) # if this line causes errors, maybe try a reassignment

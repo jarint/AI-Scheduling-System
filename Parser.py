@@ -8,6 +8,7 @@ import sys
 import logging
 import os
 import re
+import copy
 
 from Search.Environment import Environment
 from Enumerations import ActivityType, Weekday
@@ -40,10 +41,12 @@ class Parser:
 
 
     def __init__(self) -> None:
-        Environment.pre_parser_initialization()
+        pass
+
+    
+    def parse(self) -> None:
         self.__parse_commandline_args()
         self.__parse_file()
-        Environment.post_parser_initialization()
 
 
     def __next_line(self) -> str:
@@ -75,14 +78,14 @@ class Parser:
         
         self.filename = args[1]
         (
-            Environment.w_minfilled,
-            Environment.w_pref,
-            Environment.w_pair,
-            Environment.w_secdiff,
-            Environment.pen_gamemin, 
-            Environment.pen_practicemin, 
-            Environment.pen_notpaired, 
-            Environment.pen_section
+            Environment.W_MINFILLED,
+            Environment.W_PREF,
+            Environment.W_PAIR,
+            Environment.W_SECDIFF,
+            Environment.PEN_GAMEMIN, 
+            Environment.PEN_PRACTICEMIN, 
+            Environment.PEN_NOTPAIRED, 
+            Environment.PEN_SECTION
         ) = (int(arg) for arg in args[2:])
 
         
@@ -90,17 +93,18 @@ class Parser:
         valid = True
 
         # Should be 10 command line arguments
-        if len(args) != 10: valid = False
+        if len(args) != 10:
+            valid = False
+        else:
+            # Second argument should be a valid input filename (first is irrelevent)
+            if not(os.path.exists(args[1])): valid = False
 
-        # Second argument should be a valid input filename (first is irrelevent)
-        if not(os.path.exists(args[1])): valid = False
-
-        # The third argument and those thereafter should be integers
-        for arg in args[2:]:
-            try:
-                int(arg)
-            except ValueError:
-                valid = False
+            # The third argument and those thereafter should be integers
+            for arg in args[2:]:
+                try:
+                    int(arg)
+                except ValueError:
+                    valid = False
 
         # If the command line arguments are invalid we raise a runtime exception for debugging purposes
         if not(valid): raise RuntimeError("Command line arguments must contain a valid filename, four integer weights (min filled, pref, pair, sec diff), and four integer penalty values(game min, practice min, not paired, section)")
@@ -132,22 +136,39 @@ class Parser:
         logging.debug("  __parse_name")
         while (self.__next_line() is not None):
             line = self.line_str
+            Environment.NAME = line
 
 
     def __parse_game_slots(self) -> None:
         logging.debug("  __parse_game_slots")
         while (self.__next_line() is not None):
             line = self.line_str
-            game_slot = self.__parse_game_slot(line)
-            Environment.Adders.add_game_slot(game_slot)
+            weekday_name, start_time, gamemax, gamemin = re.split(self.COMMA_REGEX, line)
+            weekday = EnumValueToObjMaps.WEEKDAYS[weekday_name]
+            slot_id = (ActivityType.GAME, weekday, start_time)
+            slot = Environment.GAME_SLOT_ID_TO_OBJ[slot_id]
+            slot.gamemax = gamemax
+            slot.gamemin = gamemin
+            
 
 
     def __parse_practice_slots(self) -> None:
         logging.debug("  __parse_practice_slots")
         while (self.__next_line() is not None):
             line = self.line_str
+            weekday_name, start_time, practicemax, practicemin = re.split(self.COMMA_REGEX, line)
+            weekday = EnumValueToObjMaps.WEEKDAYS[weekday_name]
+            slot_id = (ActivityType.PRACTICE, weekday, start_time)
+            slot = Environment.PRACTICE_SLOT_ID_TO_OBJ[slot_id]
+            slot.practicemax = practicemax
+            slot.practicemin = practicemin
+            
 
 
+    # TODO: U13T1S won't actually be given in the input, but rather, we should infer its existence if U13T1 is given as input
+        # Though this is not necessarily something we will implement here
+        # Instead, if we parse U13T1 as an input game, then we will also add its special counterpart as a practice
+            # I believe the same applies to U12T1
     def __parse_games(self) -> None:
         logging.debug("  __parse_games")
         while (self.__next_line() is not None):
@@ -155,64 +176,67 @@ class Parser:
             game = self.__parse_game_id(line)
             Environment.Adders.add_game(game)
 
+            if ((game.age == "U12" or game.age == "U13") and game.tier == "T1"):
+                special_game = copy.deepcopy(game)
+                special_game.id = special_game.id + "S"
+                special_game.division = None
+                Environment.Adders.add_game(special_game)
+            
 
     def __parse_practices(self) -> None:
         logging.debug("  __parse_practices")
-
-        # special bookings (this is a city of calgary hard constraint that requires these special practices)
-        special_a = Practice("CMSA U12T1S", "CMSA", "U12", "1", None)
-        special_b = Practice("CMSA U13T1S", "CMSA", "U13", "1", None)
-        Environment.Adders.add_practice(special_a)
-        Environment.Adders.add_practice(special_b)
-
         while (self.__next_line() is not None):
             line = self.line_str
             practice = self.__parse_practice_id(line)
             Environment.Adders.add_practice(practice)
 
 
-    # Returns a list of 2 games of 2 practice object that are not compatible
-    def __parse_not_compatible(self, games_and_practices_string: str):
+    def __parse_not_compatible(self):
         while (self.__next_line() is not None):
-            activity_1, activity_2 = games_and_practices_string.split(', ')
+            line = self.line_str
+            activity_1, activity_2 = re.split(self.COMMA_REGEX, line)
             Environment.Adders.add_not_compatible(activity_1, activity_2)
         
 
-    def __parse_unwanted(self, unwanted_schedule_string) -> None:
+    def __parse_unwanted(self) -> None:
         while (self.__next_line() is not None):
             line = self.line_str
             activity_id, date, time = re.split(self.COMMA_REGEX, line)
+
             if activity_id in Environment.GAME_IDS:
                 activity_type = ActivityType.GAME
-                pass
             elif activity_id in Environment.PRACTICE_IDS:
                 activity_type = ActivityType.PRACTICE
-                pass
             else:
                 raise(RuntimeError("Unwanted ID not found in game IDs or practice IDs"))
             
             if (date == 'MO'):
-                date_enu = Weekday.MO
+                date_enum = Weekday.MO
             elif (date == 'TU'):
-                date_enu = Weekday.TU
+                date_enum = Weekday.TU
             elif (date == 'FR'):
-                date_enu = Weekday.FR
-            slot = (activity_type, date_enu, time)
+                date_enum = Weekday.FR
+            slot = (activity_type, date_enum, time)
             Environment.Adders.add_unwanted(activity_id, slot)
+
 
     def __parse_preferences(self) -> None:
         logging.debug("  __parse_preferences")
+        for activity_id in Environment.ACTIVITY_IDS:
+            Environment.PREFERENCES[activity_id] = set()
+
+
         while (self.__next_line() is not None):
             line = self.line_str
             preference = self.__parse_preference(line)
-            slot_id, activity_id, pref_value = preference
-            Environment.Adders.add_preference(preference)
-        
-        # assign default value of 0 if unspecified
-        for slot_id in Environment.GAME_SLOT_ID_TO_OBJ | Environment.PRACTICE_SLOT_ID_TO_OBJ:
-            for activity_id in Environment.GAME_ID_TO_OBJ | Environment.PRACTICE_ID_TO_OBJ:
-                if (slot_id, activity_id) not in Environment.PREFERENCES:
-                    Environment.PREFERENCES[(slot_id, activity_id)] = 0
+            activity_id, slot_id, pref_value = preference
+            if activity_id in Environment.ACTIVITY_IDS:
+                Environment.Adders.add_preference(preference)
+            else:
+                # NOTE in the preferences section of the input, there may be activity id's that 
+                # are not listed in the "games" or "practices" sections.
+                # In these cases, we may ignore the preference.
+                print("NOTE: a preference listing has appeared for an activity that does not exist. This is not a bug and can be safely ignored.")
 
 
     def __parse_pairs(self) -> None:
@@ -246,20 +270,22 @@ class Parser:
             
 
     def __parse_activity_id(self, activity_id: str) -> None:
-        activity_type = self.__decide_activity_type(activity_id)
+        activity_type = self.decide_activity_type(activity_id)
         if activity_type == ActivityType.GAME:
             return self.__parse_game_id(activity_id)
         elif activity_type == ActivityType.PRACTICE:
             return self.__parse_practice_id(activity_id)
         else:
-            raise Exception("invalid activity type")
+            raise Exception("Invalid activity type in Parser.__parse_activity_id()")
 
 
     def __parse_game_id(self, game_id: str) -> Game:
-        # Parsing (splitting) game identifier (should be four resulting strings)
+        # Splitting game identifier
         split_id = game_id.split(' ')
+        split_id[:] = [x for x in split_id if x] # removing empty strings in case there were extra spaces
+
         if len(split_id) != 4: raise RuntimeError("Issue parsing game '" + game_id + "': split does not result in four elements")
-        id = game_id
+
         association = split_id[0]
 
         # Parsing age and tier
@@ -267,44 +293,53 @@ class Parser:
         age = age_tier[0]
         if len(age_tier) == 2: tier = 'T' + age_tier[1]
         else: tier = None
+
         division = int(split_id[3])
 
-        return Game(id, association, age, tier, division)
+        return Game(game_id, association, age, tier, division)
 
 
     def __parse_practice_id(self, practice_id: str) -> Practice:
-        # return Practice("id", 0, "assoc", 0, "tier", "prac")
-        pass
+        # Splitting practice identifier
+        split_id = practice_id.split(' ')
+        split_id[:] = [x for x in split_id if x] # removing empty strings in case there were extra spaces
+
+        if not(len(split_id) == 4 or len(split_id) == 6): raise RuntimeError("Issue parsing practice '" + practice_id + "': split does not result in four or six elements")
+
+        association = split_id[0]
+
+        # Parsing age and tier
+        age_tier = split_id[1].split('T')
+        age = age_tier[0]
+        if len(age_tier) == 2: tier = 'T' + age_tier[1]
+        else: tier = None
+
+        if len(split_id) == 4: # only four strings resulting from split: no division
+            division = None
+            practice_num = int(split_id[3])
+        else: # six strings resulting from split: division given
+            division = int(split_id[3])
+            practice_num = int(split_id[5])
+
+        return Practice(practice_id, association, age, tier, division, practice_num)
 
 
-    def __parse_activity_slot(self, activity_slot_name: str) -> ActivitySlot:
-        pass
+    def time_str_to_int(self, time_str: str) -> int:
+        try:
+            hours, mins = (int(e) for e in time_str.strip().split(":"))
+        except ValueError:
+            raise ValueError(f"invalid time string: {time_str}")
+        
+        return hours * 60 + mins
 
 
-    def __parse_game_slot(self, game_slot_name: str) -> GameSlot:
-        split_line = re.split(self.COMMA_REGEX, game_slot_name)
-        weekday_name = split_line[0]
-        weekday = EnumValueToObjMaps.WEEKDAYS[weekday_name]
-        start_time = split_line[1]
-        gamemax = int(split_line[2])
-        gamemin = int(split_line[3])
-        is_evening_slot = self.__decide_if_evening_slot(start_time)
-        return GameSlot(weekday=weekday, start_time = start_time, gamemax=gamemax, gamemin=gamemin, is_evening_slot=is_evening_slot)
-
-
-    def __parse_practice_slot(self, practice_slot_name: str) -> PracticeSlot:
-        split_line = re.split(self.COMMA_REGEX, practice_slot_name)
-        weekday_name = split_line[0]
-        weekday = EnumValueToObjMaps.WEEKDAYS[weekday_name]
-        start_time = split_line[1]
-        practicemax = int(split_line[2])
-        practicemin = int(split_line[3])
-        is_evening_slot = self.__decide_if_evening_slot(start_time)
-        return PracticeSlot(weekday=weekday, start_time = start_time, practicemax=practicemax, practicemin=practicemin, is_evening_slot=is_evening_slot)
-
+    def decide_if_evening_slot(self, time_str: str) -> bool:
+        time_int = self.time_str_to_int(time_str)
+        return time_int >= 1080 # 18:00 - 18 * 60 = 1080
     
+
     def decide_activity_type(self, activity_id: str) -> ActivityType:
-        for phrase in ["PRC", "OPN", "CMSA U12T1S", "CMSA U13T1S"]:
+        for phrase in ["PRC", "OPN"]:
             if phrase in activity_id:
                 return ActivityType.PRACTICE
         
@@ -323,7 +358,7 @@ class Parser:
         except ValueError:
             raise ValueError(f"invalid preference string {preference_str}")
 
-        return (slot_id, activity_id, pref_value)
+        return (activity_id, slot_id, pref_value)
 
 
 

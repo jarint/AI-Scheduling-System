@@ -7,6 +7,7 @@ leaf node will be a complete schedule. As such, every node in the tree will be a
 from ScheduleObjects.Schedule import Schedule
 from Search.SearchModel import SearchModel
 from Search.Environment import Environment
+from Constraints.SoftConstraints import SoftConstraints
 
 
 class Node:
@@ -20,8 +21,18 @@ class Node:
             self.compute_opt()
 
     def check_sol(self):
-        # if sol becomes yes, call parent.check_sol()
-        pass
+        if not self.is_leaf():
+            sol = True
+            for child in self.children:
+                if not child.sol:
+                    sol = False
+            
+            if sol:
+                self.sol = True
+                self.parent.check_sol()
+        
+         # TODO if this is a leaf node, we'll also need a way to evaluate sol
+
 
     def compute_opt(self):
         latest_id, latest_slot_id = self.pr.latest_assignment
@@ -34,17 +45,14 @@ class Node:
         else:
             self.opt = self.eval()
 
-    def eval(self):
-        """
-        Input: ...
-        Output: ...
-        Computes the penalty value of this node's schedule.
-        """
-        # TODO: code functionality for computing eval and return the value
-        return 0
+    def eval(self, schedule: Schedule, latest_assignment: tuple):
+        return schedule.eval + SoftConstraints.get_delta_eval(schedule, latest_assignment)
 
     def add_child(self, parent, pr, sol):
         self.children.append(Node(parent, pr, sol))
+
+    def is_leaf(self):
+        return len(self.children) == 0
 
 
 class Tree:
