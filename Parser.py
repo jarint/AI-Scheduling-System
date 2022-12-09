@@ -74,7 +74,7 @@ class Parser:
     def __parse_commandline_args(self) -> None:
         logging.debug("__parse_commandline_args")
         # args = sys.argv
-        args = ['main.py', 'largeinput1.txt', '2', '3', '4', '5', '6', '7', '8', '9']
+        args = ['main.py', 'sample_input.txt', '2', '3', '4', '5', '6', '7', '8', '9']
         self.__validate_args(args)
         
         self.filename = args[1]
@@ -328,8 +328,8 @@ class Parser:
 
         return Practice(practice_id, association, age, tier, division, practice_num)
 
-
-    def time_str_to_int(self, time_str: str) -> int:
+    @staticmethod
+    def time_str_to_int(time_str: str) -> int:
         try:
             hours, mins = (int(e) for e in time_str.strip().split(":"))
         except ValueError:
@@ -338,8 +338,9 @@ class Parser:
         return hours * 60 + mins
 
 
-    def decide_if_evening_slot(self, time_str: str) -> bool:
-        time_int = self.time_str_to_int(time_str)
+    @staticmethod
+    def decide_if_evening_slot(time_str: str) -> bool:
+        time_int = Parser.time_str_to_int(time_str)
         return time_int >= 1080 # 18:00 - 18 * 60 = 1080
     
 
