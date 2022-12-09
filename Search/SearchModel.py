@@ -35,7 +35,7 @@ class SearchModel:
                 assignment = (practice_id, practice_slot_id)
                 if HardConstraints.check_constraints(schedule, assignment):
                     assignments.append(assignment)
-
+                    
         # Generating and returning new Schedule objects for each of these new assignments
         return SearchModel.generate_schedules(schedule, assignments)
 
