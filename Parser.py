@@ -74,7 +74,7 @@ class Parser:
     def __parse_commandline_args(self) -> None:
         logging.debug("__parse_commandline_args")
         # args = sys.argv
-        args = ['main.py', 'sample_input_2.txt', '2', '3', '4', '5', '6', '7', '8', '9']
+        args = ['main.py', 'largeinput1.txt', '2', '3', '4', '5', '6', '7', '8', '9']
         self.__validate_args(args)
         
         self.filename = args[1]

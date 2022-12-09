@@ -24,14 +24,14 @@ class SearchModel:
                 if HardConstraints.check_constraints(schedule, assignment):
                     assignments.append(assignment)
             else:
-                for game_slot_id in Environment.GAME_SLOT_IDS:
+                for game_slot_id in schedule.vacant_game_slots:
                     assignment = (game_id, game_slot_id)
                     if HardConstraints.check_constraints(schedule, assignment):
                         assignments.append(assignment)
 
         # Generating possible assignments for practices
         for practice_id in schedule.remaining_practices:
-            for practice_slot_id in Environment.PRACTICE_SLOT_IDS:
+            for practice_slot_id in schedule.vacant_practice_slots:
                 assignment = (practice_id, practice_slot_id)
                 if HardConstraints.check_constraints(schedule, assignment):
                     assignments.append(assignment)
