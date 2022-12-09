@@ -68,6 +68,16 @@ class Schedule:
             self.vacant_practice_slots.remove(slot_id)
         # print("Games left: " + str(self.remaining_games))
 
+        slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+        slot_type = slot_obj.ACTIVITY_TYPE
+        if slot_type == ActivityType.GAME and len(self.assignments[slot_id]) >= slot_obj.gamemax:
+            self.vacant_slots.remove(slot_id)
+            self.vacant_game_slots.remove(slot_id)
+        if slot_type == ActivityType.PRACTICE and len(self.assignments[slot_id]) >= slot_obj.practicemax:
+            self.vacant_slots.remove(slot_id)
+            self.vacant_practice_slots.remove(slot_id)
+        # print("Games left: " + str(self.remaining_games))
+
 
     def assign_practice(self, practice_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
         # print("Practice: " + practice_id)
@@ -80,7 +90,6 @@ class Schedule:
         self.latest_assignment = (practice_id, slot_id)
         self.remaining_practices.remove(practice_id) # if this line causes errors, maybe try a reassignment
 
-
         slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
         slot_type = slot_obj.ACTIVITY_TYPE
         if slot_type == ActivityType.GAME and len(self.assignments[slot_id]) >= slot_obj.gamemax:
@@ -89,3 +98,6 @@ class Schedule:
         if slot_type == ActivityType.PRACTICE and len(self.assignments[slot_id]) >= slot_obj.practicemax:
             self.vacant_slots.remove(slot_id)
             self.vacant_practice_slots.remove(slot_id)
+
+
+        # print("Practices left: " + str(self.remaining_practices))
