@@ -15,6 +15,7 @@ import threading
 # sample input: python main.py sample_input.txt 2 3 4 5 6 7 8 9
 
 class Main:
+    search_complete = False
 
     @staticmethod
     def main():
@@ -33,6 +34,7 @@ class Main:
         threading.Thread(target=Main.display_current_opt).start()
         
         optimal_solution = Scheduler.search()
+        Main.search_complete = True
         
         if optimal_solution == None:
             print("No solution was found!")
@@ -49,8 +51,8 @@ class Main:
     
     @staticmethod
     def display_current_opt():
-        while True:
-            time.sleep(10)
+        while not Main.search_complete:
+            time.sleep(4)
             if Scheduler.current_best != None:
                 Printer.print_schedule(Scheduler.current_best.pr)
             else:
