@@ -145,7 +145,7 @@ class HardConstraints:
         def not_compatible(schedule: Schedule, assignment: tuple) -> bool:
             activity_id, slot_id = assignment
             for id in schedule.assignments[slot_id]:
-                if Environment.NOT_COMPATIBLE[activity_id].contains(id):
+                if id in Environment.NOT_COMPATIBLE[activity_id]:
                     return False
             return True
 
@@ -200,8 +200,8 @@ class HardConstraints:
         def evening_slot_constraint(schedule: Schedule, assignment: tuple) -> bool:
             activity_id, slot_id = assignment
             activity_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
-            if (activity_obj.division == 9): # TODO may not only be division 9, but divisions that start with 9
-                return not Parser.decide_if_evening_slot(slot_id[2])
+            if (str(activity_obj.division)[0] == '9'): # TODO may not only be division 9, but divisions that start with 9
+                return Parser.decide_if_evening_slot(slot_id[2])
             else:
                 return True
 
