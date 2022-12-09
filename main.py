@@ -23,6 +23,9 @@ class Main:
         parser.parse()
         Environment.post_parser_initialization()
         Scheduler.initialize()
+
+        for item in Environment.GAME_SLOT_ID_TO_OBJ.values():
+            print(item.gamemax)
         
         optimal_solution = Scheduler.search()
         
