@@ -180,7 +180,7 @@ class HardConstraints:
             if (activity_obj.division == 9): # TODO may not only be division 9, but divisions that start with 9
                 return not Parser.decide_if_evening_slot(slot_id[2])
             else:
-                return False
+                return True
 
 
         @staticmethod

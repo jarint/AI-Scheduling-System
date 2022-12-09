@@ -26,10 +26,10 @@ class Scheduler:
     @staticmethod
     def search():
         while len(Scheduler.stack) > 0:
-            print("Stack size: " + str(len(Scheduler.stack)))
+            # print("Stack size: " + str(len(Scheduler.stack)))
 
             node = Scheduler.stack.pop()
-
+            
             # Checking if we update current best
             if (node.sol == True):
                 if not(Scheduler.current_best == None):

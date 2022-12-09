@@ -80,7 +80,6 @@ class Tree:
 
 
     def expand(self, parent_node: Node):
-        # print("Number of divs: " + str(len(SearchModel.div(parent_node.pr))))
         for schedule in SearchModel.div(parent_node.pr):
             parent_node.add_child(parent_node, schedule, False)
 
