@@ -57,9 +57,15 @@ class Main:
             if Scheduler.current_best != None:
                 Printer.print_schedule(Scheduler.current_best.pr)
             else:
-                print("No solution yet. Keep waiting!")
-            print("General fails: " + str(HardConstraints.general_fails / 1000000))
-            print("City fails: " + str(HardConstraints.city_fails / 1000000))
+                print("\nNo solution yet among " + str(Environment.leaves_encountered) + " leaves encountered. Keep waiting!\n")
+            total_fails = HardConstraints.general_fails + HardConstraints.city_fails
+            print("General fails: " + str(round(HardConstraints.general_fails / total_fails, 3)))
+            print("     Game max fails: " + str(round(HardConstraints.game_max_fails / HardConstraints.general_fails, 3)))
+            print("     Practice max fails: " + str(round(HardConstraints.practice_max_fails / HardConstraints.general_fails, 3)))
+            print("     Same slot fails: " + str(round(HardConstraints.same_slot_fails / HardConstraints.general_fails, 3)))
+            print("     Part assign fails: " + str(round(HardConstraints.part_assign_fails / HardConstraints.general_fails, 3)))
+            print("     Unwanted fails: " + str(round(HardConstraints.unwanted_fails / HardConstraints.general_fails, 3)))
+            print("\nCity fails: " + str(round(HardConstraints.city_fails / total_fails, 3)))
 
 if __name__ == "__main__":
     Main.main()

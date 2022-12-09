@@ -13,6 +13,7 @@ from ScheduleObjects.GameSlot import GameSlot
 from ScheduleObjects.PracticeSlot import PracticeSlot
 
 class Environment:
+    leaves_encountered = 0
 
     # <pre-parser initialization>
 
