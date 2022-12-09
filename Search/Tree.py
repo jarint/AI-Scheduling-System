@@ -90,4 +90,4 @@ class Tree:
 
         # Sorting children by Opt values
         # Note that it is sorting in reverse order (using -)
-        parent_node.children.sort(key=lambda x: -(x.opt))
+        parent_node.children.sort(key=lambda x: x.opt, reverse=True)
