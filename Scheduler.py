@@ -33,7 +33,7 @@ class Scheduler:
 
             total_activities = len(Environment.ACTIVITY_IDS)
             remaining_activities = len(node.pr.remaining_games) + len(node.pr.remaining_practices)
-            print(total_activities - remaining_activities)
+            # print(total_activities - remaining_activities)
             
             # Adding children to node
             Scheduler.tree.expand(node)
