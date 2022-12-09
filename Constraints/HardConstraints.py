@@ -145,7 +145,7 @@ class HardConstraints:
         def not_compatible(schedule: Schedule, assignment: tuple) -> bool:
             activity_id, slot_id = assignment
             for id in schedule.assignments[slot_id]:
-                if Environment.NOT_COMPATIBLE[activity_id].contains(id):
+                if id in Environment.NOT_COMPATIBLE[activity_id]:
                     return False
             return True
 
