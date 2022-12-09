@@ -49,7 +49,7 @@ class Schedule:
         self.slot_of_each_activity[game_id] = slot_id
         self.latest_assignment = (game_id, slot_id)
         self.remaining_games.remove(game_id) # if this line causes errors, maybe try a reassignment
-        print("Games left: " + str(self.remaining_games))
+        # print("Games left: " + str(self.remaining_games))
 
 
     def assign_practice(self, practice_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
@@ -62,4 +62,4 @@ class Schedule:
         self.slot_of_each_activity[practice_id] = slot_id
         self.latest_assignment = (practice_id, slot_id)
         self.remaining_practices.remove(practice_id) # if this line causes errors, maybe try a reassignment
-        print("Practices left: " + str(self.remaining_practices))
+        # print("Practices left: " + str(self.remaining_practices))

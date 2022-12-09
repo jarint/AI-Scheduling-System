@@ -29,8 +29,7 @@ class Node:
         if not self.is_leaf():
             sol = True
             for child in self.children:
-                if not child.sol:
-                    sol = False
+                sol = sol and child.sol # if any child is False, the parent is False
             
             if sol:
                 self.sol = True
@@ -41,7 +40,6 @@ class Node:
             if (len(self.pr.remaining_games) == 0) and (len(self.pr.remaining_practices) == 0):
                 self.sol = True
                 self.parent.check_sol()
-            self.sol = False
         
 
     def compute_opt(self):
