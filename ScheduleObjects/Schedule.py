@@ -16,11 +16,17 @@ class Schedule:
         self.assignments = {slot_id: set() for slot_id in Environment.ALL_SLOT_IDS}
         self.slot_of_each_activity = {} # maps from activity id to slot id to represent which slot each activity is scheduled to
         self.latest_assignment = None # (activity id, slot id)
+        self.remaining_games = list(Environment.GAME_IDS) # TODO: needs to initialized to be the entire set of games
+        self.remaining_practices = list(Environment.PRACTICE_IDS) # TODO: needs to be initialized to be the entire set of practices
+
+        self.vacant_game_slots = set(filter(lambda id: Environment.SLOT_ID_TO_OBJ[id].gamemax > 0, Environment.GAME_SLOT_IDS))
+        self.vacant_practice_slots = set(filter(lambda id: Environment.SLOT_ID_TO_OBJ[id].practicemax > 0, Environment.PRACTICE_SLOT_IDS))
+        self.vacant_slots = self.vacant_game_slots.union(self.vacant_practice_slots)
         self.remaining_games = [] # TODO: needs to initialized to be the entire set of games
         self.remaining_practices = [] # TODO: needs to be initialized to be the entire set of practices
         self.eval = 0
-
     
+
     def get_copy(self):
         return copy.deepcopy(self)
 
@@ -73,6 +79,7 @@ class Schedule:
         self.slot_of_each_activity[practice_id] = slot_id
         self.latest_assignment = (practice_id, slot_id)
         self.remaining_practices.remove(practice_id) # if this line causes errors, maybe try a reassignment
+
 
         slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
         slot_type = slot_obj.ACTIVITY_TYPE
