@@ -19,15 +19,20 @@ class SearchModel:
 
         # Generating possible assignments for games
         for game_id in schedule.remaining_games:
-            for game_slot_id in Environment.GAME_SLOT_IDS:
-                assignment = tuple(game_id, game_slot_id)
+            if game_id in Environment.SPECIAL_BOOKINGS:
+                assignment = (game_id, Environment.SPECIAL_BOOKINGS[game_id])
                 if HardConstraints.check_constraints(schedule, assignment):
                     assignments.append(assignment)
+            else:
+                for game_slot_id in Environment.GAME_SLOT_IDS:
+                    assignment = (game_id, game_slot_id)
+                    if HardConstraints.check_constraints(schedule, assignment):
+                        assignments.append(assignment)
 
         # Generating possible assignments for practices
         for practice_id in schedule.remaining_practices:
             for practice_slot_id in Environment.PRACTICE_SLOT_IDS:
-                assignment = tuple(practice_id, practice_slot_id)
+                assignment = (practice_id, practice_slot_id)
                 if HardConstraints.check_constraints(schedule, assignment):
                     assignments.append(assignment)
 
@@ -44,10 +49,11 @@ class SearchModel:
         schedules = []
 
         for assign in assignments:
-            schedule = schedule.get_copy()
+            new_schedule = schedule.get_copy()
             activity_id, slot_id = assign
-            schedule.assign_activity(activity_id, slot_id)
-            schedule.penalty = schedule.penalty + SoftConstraints.get_delta_penalty(schedule, assign)
-            schedules.append(schedule)
+            new_schedule.eval = new_schedule.eval + SoftConstraints.get_delta_eval(new_schedule, assign)
+            new_schedule.assign_activity(activity_id, slot_id)
+            new_schedule.latest_assignment = assign
+            schedules.append(new_schedule)
 
         return schedules

@@ -73,7 +73,8 @@ class Parser:
 
     def __parse_commandline_args(self) -> None:
         logging.debug("__parse_commandline_args")
-        args = sys.argv
+        # args = sys.argv
+        args = ['main.py', 'sample_input.txt', '2', '3', '4', '5', '6', '7', '8', '9']
         self.__validate_args(args)
         
         self.filename = args[1]
@@ -147,8 +148,8 @@ class Parser:
             weekday = EnumValueToObjMaps.WEEKDAYS[weekday_name]
             slot_id = (ActivityType.GAME, weekday, start_time)
             slot = Environment.GAME_SLOT_ID_TO_OBJ[slot_id]
-            slot.gamemax = gamemax
-            slot.gamemin = gamemin
+            slot.gamemax = int(gamemax)
+            slot.gamemin = int(gamemin)
             
 
 
@@ -160,8 +161,8 @@ class Parser:
             weekday = EnumValueToObjMaps.WEEKDAYS[weekday_name]
             slot_id = (ActivityType.PRACTICE, weekday, start_time)
             slot = Environment.PRACTICE_SLOT_ID_TO_OBJ[slot_id]
-            slot.practicemax = practicemax
-            slot.practicemin = practicemin
+            slot.practicemax = int(practicemax)
+            slot.practicemin = int(practicemin)
             
 
 
@@ -179,7 +180,9 @@ class Parser:
             if ((game.age == "U12" or game.age == "U13") and game.tier == "T1"):
                 special_game = copy.deepcopy(game)
                 special_game.id = game.association + ' ' + game.age + game.tier + "S"
+                special_game.division = None
                 Environment.Adders.add_game(special_game)
+                Environment.UNWANTED[special_game.id] = set()
             
 
     def __parse_practices(self) -> None:
@@ -198,6 +201,9 @@ class Parser:
         
 
     def __parse_unwanted(self) -> None:
+        for activity_id in Environment.ACTIVITY_IDS:
+            Environment.UNWANTED[activity_id] = set()
+
         while (self.__next_line() is not None):
             line = self.line_str
             activity_id, date, time = re.split(self.COMMA_REGEX, line)

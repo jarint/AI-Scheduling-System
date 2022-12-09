@@ -22,9 +22,9 @@ class Main:
         parser = Parser()
         parser.parse()
         Environment.post_parser_initialization()
+        Scheduler.initialize()
         
-        s = Scheduler()
-        optimal_solution = s.search()
+        optimal_solution = Scheduler.search()
         
         if optimal_solution == None:
             print("No solution was found!")

@@ -9,6 +9,8 @@ from Search.SearchModel import SearchModel
 from Search.Environment import Environment
 from Constraints.SoftConstraints import SoftConstraints
 
+import pprint
+
 
 class Node:
     def __init__(self, parent, pr: Schedule, sol: bool):
@@ -23,7 +25,7 @@ class Node:
 
     def check_sol(self):
         if self.parent == None: return
-        
+
         if not self.is_leaf():
             sol = True
             for child in self.children:
@@ -43,18 +45,26 @@ class Node:
         
 
     def compute_opt(self):
+        # print(type(self.parent))
+        # print(type(self.pr.latest_assignment))
+        # print("\n\n")
+        # for slot in self.pr.assignments.values():
+        #     if len(slot) != 0:
+        #         pprint.pprint(slot)
+        # print("\n\n")
+
         latest_id, latest_slot_id = self.pr.latest_assignment
 
         # We want to make assignments that fulfil hard constraints first, so we give those assignments infinitely negative values (else, we assign eval())
         if (latest_id in Environment.PARTASSIGN) and (latest_slot_id == Environment.PARTASSIGN[latest_id]):
             self.opt = float('-inf')
-        elif (latest_id in Environment.SPECIAL_PRACTICE_BOOKINGS) and (latest_slot_id == Environment.SPECIAL_PRACTICE_BOOKINGS[latest_id]):
+        elif (latest_id in Environment.SPECIAL_BOOKINGS) and (latest_slot_id == Environment.SPECIAL_BOOKINGS[latest_id]):
             self.opt = float('-inf')
         else:
             self.opt = self.eval()
 
-    def eval(self, schedule: Schedule, latest_assignment: tuple):
-        return schedule.eval + SoftConstraints.get_delta_eval(schedule, latest_assignment)
+    def eval(self):
+        return self.pr.eval + SoftConstraints.get_delta_eval(self.pr, self.pr.latest_assignment)
 
     def add_child(self, parent, pr, sol):
         self.children.append(Node(parent, pr, sol))
@@ -70,6 +80,7 @@ class Tree:
 
 
     def expand(self, parent_node: Node):
+        # print("Number of divs: " + str(len(SearchModel.div(parent_node.pr))))
         for schedule in SearchModel.div(parent_node.pr):
             parent_node.add_child(parent_node, schedule, False)
 
