@@ -21,16 +21,19 @@ class Printer():
 
     def print_schedule(schedule: Schedule):
         #schedule = schedule.get_copy() <- not sure if need this
+        BUFFER_SPACE = 30
+
         print("Eval-value: " + str(schedule.getEval()))
         for activity_id in schedule.slot_of_each_activity:
             activity = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
             slot_id = schedule.slot_of_each_activity[activity_id]
             activity_type, weekday, start_time = slot_id
 
+            num_spaces = BUFFER_SPACE - len(activity_id) 
+
             print(
-                activity_id + "        :" +
-                weekday.value + ";" +
-                start_time
+                activity_id + " " * num_spaces + ": " +
+                weekday.value + ", " + start_time
             )
 
 
