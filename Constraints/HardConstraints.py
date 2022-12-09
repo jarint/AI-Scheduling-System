@@ -24,6 +24,7 @@ class HardConstraints:
     game_max_fails = 0
     practice_max_fails = 0
     same_slot_fails = 0
+    not_compatible_fails = 0
     part_assign_fails = 0
     unwanted_fails = 0
 
@@ -71,14 +72,16 @@ class HardConstraints:
 
             # The additional constraints below are checked whether the activity is a game or a practice
             same_slot = HardConstraints.GeneralConstraints.gp_same_slot(schedule, assignment)
+            not_compatible = HardConstraints.GeneralConstraints.not_compatible(schedule, assignment)
             part_assign = HardConstraints.GeneralConstraints.part_assign(schedule, assignment)
             unwanted = HardConstraints.GeneralConstraints.unwanted(schedule, assignment)
 
             HardConstraints.same_slot_fails = HardConstraints.same_slot_fails + (not same_slot)
+            HardConstraints.not_compatible_fails = HardConstraints.not_compatible_fails + (not not_compatible)
             HardConstraints.part_assign_fails = HardConstraints.part_assign_fails + (not part_assign)
             HardConstraints.unwanted_fails = HardConstraints.unwanted_fails + (not unwanted)
 
-            return passes and same_slot and part_assign and unwanted
+            return passes and same_slot and not_compatible and part_assign and unwanted
 
 
         @staticmethod
@@ -142,7 +145,7 @@ class HardConstraints:
         def not_compatible(schedule: Schedule, assignment: tuple) -> bool:
             activity_id, slot_id = assignment
             for id in schedule.assignments[slot_id]:
-                if Environment.NOT_COMPATIBLE[activity_id].contains(id): 
+                if Environment.NOT_COMPATIBLE[activity_id].contains(id):
                     return False
             return True
 
