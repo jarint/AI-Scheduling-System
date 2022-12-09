@@ -66,6 +66,9 @@ class Environment:
     ALL_SLOT_IDS = set()
     PRACTICE_SLOT_IDS = set()
     GAME_SLOT_IDS = set()
+    # INCLUDED_GAME_SLOT_IDS = set()
+    # INCLUDED_PRACTICE_SLOT_IDS = set()
+    # INCLUDED_ALL_SLOT_IDS = set()
 
     MO_G_SLOTS_IDS = set()
     TU_G_SLOT_IDS = set()
@@ -216,6 +219,9 @@ class Environment:
         slot_c.gamemin = 0
         slot_c.gamemax = 0
 
+        # Environment.INCLUDED_GAME_SLOT_IDS = {obj.id for obj in filter(lambda obj: obj.gamemax > 0, Environment.GAME_SLOT_ID_TO_OBJ.values())}
+        # Environment.INCLUDED_PRACTICE_SLOT_IDS = {obj.id for obj in filter(lambda obj: obj.practicemax > 0, Environment.PRACTICE_SLOT_ID_TO_OBJ.values())}
+        # Environment.INCLUDED_ALL_SLOT_IDS = Environment.GAME_SLOT_IDS.union(Environment.PRACTICE_SLOT_IDS)
 
         logging.debug("\n" * 5)
         logging.debug("<environment data>")

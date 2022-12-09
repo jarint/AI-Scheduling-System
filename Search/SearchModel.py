@@ -19,19 +19,14 @@ class SearchModel:
 
         # Generating possible assignments for games
         for game_id in schedule.remaining_games:
-            if game_id in Environment.SPECIAL_BOOKINGS:
-                assignment = (game_id, Environment.SPECIAL_BOOKINGS[game_id])
+            for game_slot_id in Environment.GAME_SLOT_IDS:
+                assignment = (game_id, game_slot_id)
                 if HardConstraints.check_constraints(schedule, assignment):
                     assignments.append(assignment)
-            else:
-                for game_slot_id in Environment.GAME_SLOT_IDS:
-                    assignment = (game_id, game_slot_id)
-                    if HardConstraints.check_constraints(schedule, assignment):
-                        assignments.append(assignment)
 
         # Generating possible assignments for practices
         for practice_id in schedule.remaining_practices:
-            for practice_slot_id in Environment.PRACTICE_SLOT_IDS:
+            for practice_slot_id in schedule.vacant_practice_slots:
                 assignment = (practice_id, practice_slot_id)
                 if HardConstraints.check_constraints(schedule, assignment):
                     assignments.append(assignment)
