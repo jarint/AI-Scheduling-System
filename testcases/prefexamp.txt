@@ -1,0 +1,35 @@
+Name:
+prefexamp
+
+Game slots:
+MO, 8:00, 1, 0
+MO, 9:00, 1, 0
+MO, 10:00, 1, 0
+
+Practice slots:
+
+Games:
+CMSA U10T1 DIV 01
+CMSA U10T2 DIV 01
+CMSA U10T3 DIV 01
+
+Practices:
+
+Not compatible:
+
+Unwanted:
+
+Preferences:
+MO, 8:00, CMSA U10T1 DIV 01, 10
+MO, 9:00, CMSA U10T1 DIV 01, 5
+MO, 10:00, CMSA U10T1 DIV 01, 1
+MO, 8:00, CMSA U10T2 DIV 01, 10
+MO, 9:00, CMSA U10T2 DIV 01, 8
+MO, 10:00, CMSA U10T2 DIV 01, 2
+MO, 8:00, CMSA U10T3 DIV 01, 5
+MO, 9:00, CMSA U10T3 DIV 01, 8
+MO, 10:00, CMSA U10T3 DIV 01, 1
+
+Pair:
+
+Partial assignments:

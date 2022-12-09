@@ -1,0 +1,32 @@
+Name:
+hc9-meet
+
+Game slots:
+MO, 8:00, 2, 1
+MO, 9:00, 2, 1
+TU, 11:00, 2, 1
+
+Practice slots:
+TU, 14:00, 4, 2
+
+Games:
+CMSA U10T1 DIV 01
+CMSA U10T2 DIV 01
+CMSA U10T3 DIV 01
+CMSA U10T4 DIV 01
+CUSA O19T1 DIV 01
+
+Practices:
+CMSA U10T3 DIV 01 PRC 01
+
+Not compatible:
+
+Unwanted:
+
+Preferences:
+MO, 8:00, CMSA U10T3 DIV 01, 10
+
+Pair:
+
+Partial assignments:
+

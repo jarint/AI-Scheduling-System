@@ -82,14 +82,14 @@ class Scheduler:
         if time.time() - Scheduler.last_print_time > 4:
             Scheduler.last_print_time = time.time()
             total_fails = HardConstraints.general_fails + HardConstraints.city_fails
-            print("\nGeneral fails: " + str(round(HardConstraints.general_fails / total_fails, 3)))
-            print("     Game max fails: " + str(round(HardConstraints.game_max_fails / HardConstraints.general_fails, 3)))
-            print("     Practice max fails: " + str(round(HardConstraints.practice_max_fails / HardConstraints.general_fails, 3)))
-            print("     Same slot fails: " + str(round(HardConstraints.same_slot_fails / HardConstraints.general_fails, 3)))
-            print("     Not compatible fails: " + str(round(HardConstraints.not_compatible_fails / HardConstraints.general_fails, 3)))
-            print("     Part assign fails: " + str(round(HardConstraints.part_assign_fails / HardConstraints.general_fails, 3)))
-            print("     Unwanted fails: " + str(round(HardConstraints.unwanted_fails / HardConstraints.general_fails, 3)))
-            print("\nCity fails: " + str(round(HardConstraints.city_fails / total_fails, 3)) + "\n")
+            # print("\nGeneral fails: " + str(round(HardConstraints.general_fails / total_fails, 3)))
+            # print("     Game max fails: " + str(round(HardConstraints.game_max_fails / HardConstraints.general_fails, 3)))
+            # print("     Practice max fails: " + str(round(HardConstraints.practice_max_fails / HardConstraints.general_fails, 3)))
+            # print("     Same slot fails: " + str(round(HardConstraints.same_slot_fails / HardConstraints.general_fails, 3)))
+            # print("     Not compatible fails: " + str(round(HardConstraints.not_compatible_fails / HardConstraints.general_fails, 3)))
+            # print("     Part assign fails: " + str(round(HardConstraints.part_assign_fails / HardConstraints.general_fails, 3)))
+            # print("     Unwanted fails: " + str(round(HardConstraints.unwanted_fails / HardConstraints.general_fails, 3)))
+            # print("\nCity fails: " + str(round(HardConstraints.city_fails / total_fails, 3)) + "\n")
             if Scheduler.current_best != None:
                 Printer.print_schedule(Scheduler.current_best.pr)
             else:

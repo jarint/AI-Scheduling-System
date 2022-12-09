@@ -23,6 +23,29 @@ class Schedule:
         self.remaining_games = list(Environment.GAME_IDS) # TODO: needs to initialized to be the entire set of games
         self.remaining_practices = list(Environment.PRACTICE_IDS) # TODO: needs to be initialized to be the entire set of practices
         self.eval = 0
+
+        gamemin_sum = 0
+        for slot_id in self.vacant_game_slots:
+            slot_object = Environment.SLOT_ID_TO_OBJ[slot_id]
+            gamemin_sum = gamemin_sum + slot_object.gamemin
+
+        practicemin_sum = 0
+        for slot_id in self.vacant_practice_slots:
+            slot_object = Environment.SLOT_ID_TO_OBJ[slot_id]
+            practicemin_sum = practicemin_sum + slot_object.practicemin
+
+        gamemin_eval = gamemin_sum*Environment.PEN_GAMEMIN
+        practicemin_eval = practicemin_sum*Environment.PEN_PRACTICEMIN
+
+
+        preference_eval = 0
+        for tp in Environment.PREFERENCES.values():
+            for preference in tp:
+                preference_eval = preference_eval + preference[1]
+
+        self.eval = gamemin_eval + practicemin_eval + preference_eval
+
+        
     
     def get_copy(self):
         return copy.deepcopy(self)

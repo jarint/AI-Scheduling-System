@@ -1,0 +1,78 @@
+Solutions and parameter settings for test examples:
+---------------------------------------------------
+
+All hc*.txt are unsolvable!
+
+Obviously any parameter setting will have this result.
+
+--------------------------------------
+
+minnumber.txt :
+
+parameters: w_minfilled=1 w_pref=0 w_pair=0 w_secdiff=0
+ pen_gamesmin=100 pen_practicesmin=100 pen_notpaired=0 pen_section=10
+ 1 0 0 0 100 100 0 10
+
+Solution:
+CMSA U10T1: Mo. 10:00
+CMSA U10T2: Mo. 10:00
+CMSA U10T3: Mo. 10:00
+CMSA U10T4: Mo. 9:00
+CMSA U10T5: Mo. 9:00
+CMSA U10T6: MO. 8:00
+
+Eval value: 0
+
+--------------------------------------
+
+parallelpen.txt :
+
+parameters: w_minfilled=0 w_pref=0 w_pair=0 w_secdiff=1
+ pen_gamesmin=1 pen_practicesmin=1 pen_notpaired=0 pen_section=5
+ 0 0 0 1 1 1 0 5
+
+Solution:
+CMSA U10T1 DIV 01: Mo. 8:00
+CMSA U10T1 DIV 02: Mo. 9:00
+CMSA U10T1 DIV 03: Mo. 10:00
+CMSA U10T1 DIV 04: Mo. 10:00
+CMSA U10T2 DIV 01: Mo. 9:00
+CMSA U10T2 DIV 02: Mo. 10:00
+
+Eval value: 5
+
+Note that the divisions for a particular game can be permutated!
+
+--------------------------------------
+
+prefexamp.txt :
+
+parameters: w_minfilled=0 w_pref=1 w_pair=0 w_secdiff=0
+ pen_gamesmin=100 pen_practicesmin=100 pen_notpaired=0 pen_section=100
+ 0 1 0 0 100 100 0 100
+
+Solution:
+CMSA U10T1: Mo. 8:00
+CMSA U10T2: Mo. 10:00
+CMSA U10T3: Mo. 9:00
+
+Eval value: 30
+
+--------------------------------------
+
+pairing.txt :
+
+parameters: w_minfilled=0 w_pref=0 w_pair=1 w_secdiff=0
+ pen_gamesmin=0 pen_practicesmin=0 pen_notpaired=11 pen_section=0
+ 0 0 1 0 0 0 11 0
+
+Solution:
+CMSA U10T1: Mo. 8:00
+CMSA U10T2: Mo. 9:00
+CMSA U10T3: Mo. 9:00
+CMSA U10T4: Mo. 10:00
+CMSA U10T5: Mo. 10:00
+CMSA U10T6: Mo. 10:00
+
+Eval value: 55
+

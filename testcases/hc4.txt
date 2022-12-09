@@ -1,0 +1,28 @@
+Name:
+hc4-nc
+
+Game slots:
+MO, 8:00, 2, 1
+
+Practice slots:
+TU, 8:00, 4, 2
+
+Games:
+CMSA U10T1 DIV 01
+CUSA O19T1 DIV 01
+
+Practices:
+CMSA U10T1 DIV 01 PRC 01
+CUSA O19T1 DIV 01 PRC 01
+
+Not compatible:
+CMSA U10T1 DIV 01, CUSA O19T1 DIV 01
+
+Unwanted:
+
+Preferences:
+MO, 8:00, CMSA U10T1 DIV 01, 10
+
+Pair:
+
+Partial assignments:

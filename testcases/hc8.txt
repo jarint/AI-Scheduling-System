@@ -1,0 +1,32 @@
+Name:
+hc8-5xx
+
+Game slots:
+MO, 8:00, 2, 1
+MO, 9:00, 2, 1
+TU, 8:00, 2, 1
+
+Practice slots:
+TU, 14:00, 4, 2
+
+Games:
+CMSA U15T1 DIV 01
+CMSA U16T1 DIV 01
+CMSA U17T1 DIV 01
+CMSA U19T1 DIV 01
+
+Practices:
+CMSA U15T1 DIV 01 PRC 01
+
+Not compatible:
+CMSA U19T1 DIV 01, CMSA U15T1 DIV 01
+
+Unwanted:
+
+Preferences:
+MO, 8:00, CMSA U15T1 DIV 01, 10
+
+Pair:
+
+Partial assignments:
+
