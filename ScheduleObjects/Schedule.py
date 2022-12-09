@@ -16,6 +16,10 @@ class Schedule:
         self.assignments = {slot_id: set() for slot_id in Environment.ALL_SLOT_IDS}
         self.slot_of_each_activity = {} # maps from activity id to slot id to represent which slot each activity is scheduled to
         self.latest_assignment = None # (activity id, slot id)
+
+        self.vacant_game_slots = set(filter(lambda id: Environment.SLOT_ID_TO_OBJ[id].gamemax > 0, Environment.GAME_SLOT_IDS))
+        self.vacant_practice_slots = set(filter(lambda id: Environment.SLOT_ID_TO_OBJ[id].practicemax > 0, Environment.PRACTICE_SLOT_IDS))
+        self.vacant_slots = self.vacant_game_slots.union(self.vacant_practice_slots)
         self.remaining_games = list(Environment.GAME_IDS) # TODO: needs to initialized to be the entire set of games
         self.remaining_practices = list(Environment.PRACTICE_IDS) # TODO: needs to be initialized to be the entire set of practices
         self.eval = 0
@@ -51,6 +55,15 @@ class Schedule:
         self.remaining_games.remove(game_id) # if this line causes errors, maybe try a reassignment
         # print("Games left: " + str(self.remaining_games))
 
+        slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+        slot_type = slot_obj.ACTIVITY_TYPE
+        if slot_type == ActivityType.GAME and len(self.assignments[slot_id]) >= slot_obj.gamemax:
+            self.vacant_slots.remove(slot_id)
+            self.vacant_game_slots.remove(slot_id)
+        if slot_type == ActivityType.PRACTICE and len(self.assignments[slot_id]) >= slot_obj.practicemax:
+            self.vacant_slots.remove(slot_id)
+            self.vacant_practice_slots.remove(slot_id)
+
 
     def assign_practice(self, practice_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
         # print("Practice: " + practice_id)
@@ -63,3 +76,12 @@ class Schedule:
         self.latest_assignment = (practice_id, slot_id)
         self.remaining_practices.remove(practice_id) # if this line causes errors, maybe try a reassignment
         # print("Practices left: " + str(self.remaining_practices))
+
+        slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
+        slot_type = slot_obj.ACTIVITY_TYPE
+        if slot_type == ActivityType.GAME and len(self.assignments[slot_id]) >= slot_obj.gamemax:
+            self.vacant_slots.remove(slot_id)
+            self.vacant_game_slots.remove(slot_id)
+        if slot_type == ActivityType.PRACTICE and len(self.assignments[slot_id]) >= slot_obj.practicemax:
+            self.vacant_slots.remove(slot_id)
+            self.vacant_practice_slots.remove(slot_id)
