@@ -28,6 +28,8 @@ class Schedule:
     def get_activities_in_slot(self, slot_id: "tuple[ActivityType, Weekday, str]") -> "set[str]":
         return self.assignments[slot_id]
 
+    def getEval(self):
+        return self.eval
 
     def assign_activity(self, activity_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
         """
