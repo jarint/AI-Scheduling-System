@@ -8,6 +8,7 @@ import logging
 from Search.Environment import Environment
 from Scheduler import Scheduler
 from Parser import Parser
+from Printer import Printer
 
 # sample input: python main.py sample_input.txt 2 3 4 5 6 7 8 9
 
@@ -29,8 +30,8 @@ class Main:
         if optimal_solution == None:
             print("No solution was found!")
         else:
-            print("Solution: " + str(optimal_solution.pr.assignments))
-
+            #print("Solution: " + str(optimal_solution.pr.assignments))
+            Printer.printSchedule(optimal_solution)
         # print("Eval-value: " + str(optimal_solution))
         # print(...)
     
