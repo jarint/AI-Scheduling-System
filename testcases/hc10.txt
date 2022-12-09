@@ -1,0 +1,27 @@
+Name:
+hc10-sppr
+
+Game slots:
+MO, 8:00, 1, 1
+TU, 17:00, 2, 1
+
+Practice slots:
+TU, 14:00, 4, 2
+
+Games:
+CMSA U10T1 DIV 01
+CMSA U13T1 DIV 01
+
+Practices:
+CMSA U10T1 DIV 01 PRC 01
+
+Not compatible:
+CMSA U13T1 DIV 01, CMSA U10T1 DIV 01
+
+Unwanted:
+
+Preferences:
+
+Pair:
+
+Partial assignments:

@@ -23,6 +23,8 @@ class Schedule:
         self.remaining_games = list(Environment.GAME_IDS) # TODO: needs to initialized to be the entire set of games
         self.remaining_practices = list(Environment.PRACTICE_IDS) # TODO: needs to be initialized to be the entire set of practices
         self.eval = 0
+
+        
     
     def get_copy(self):
         return copy.deepcopy(self)
