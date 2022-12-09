@@ -68,7 +68,7 @@ class HardConstraints:
             slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
             if activity_type != ActivityType.GAME:
                 return True
-            if len(schedule.assignments[slot_id]) > slot_obj.gamemax:
+            if len(schedule.assignments[slot_id]) >= slot_obj.gamemax:
                 return False
             return True
 
@@ -80,7 +80,7 @@ class HardConstraints:
             slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
             if activity_type != ActivityType.PRACTICE:
                 return True
-            if len(schedule.assignments[slot_id]) > slot_obj.practicemax:
+            if len(schedule.assignments[slot_id]) >= slot_obj.practicemax:
                 return False
             return True
 

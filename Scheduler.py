@@ -28,8 +28,8 @@ class Scheduler:
         while len(Scheduler.stack) > 0:
             # print("Stack size: " + str(len(Scheduler.stack)))
 
-            node = Scheduler.stack.pop()
-            
+            node: Node = Scheduler.stack.pop()
+
             # Checking if we update current best
             if (node.sol == True):
                 if not(Scheduler.current_best == None):
