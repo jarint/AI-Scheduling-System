@@ -92,12 +92,12 @@ class HardConstraints:
             slot_obj = Environment.SLOT_ID_TO_OBJ[slot_id]
             overlapping_slots = slot_obj.overlaps
             activity_obj = Environment.ACTIVITY_ID_TO_OBJ[activity_id]
-            type_a = activity_obj.activity_type
+            type_a = activity_obj.ACTIVITY_TYPE
 
             for overlapping_slot in overlapping_slots:
                 for act_id in schedule.assignments[overlapping_slot]:
                     act_obj = Environment.ACTIVITY_ID_TO_OBJ[act_id]
-                    type_b = act_obj.activity_type
+                    type_b = act_obj.ACTIVITY_TYPE
                     if type_a == ActivityType.PRACTICE and type_b == ActivityType.PRACTICE:
                         continue
                     
@@ -160,7 +160,7 @@ class HardConstraints:
             if (activity_type == ActivityType.GAME): # activity is a game
                 passes = (
                     HardConstraints.CityConstraints.age_group_constraint(schedule, assignment) and
-                    HardConstraints.CityConstraints.meeting_constraint(schedule, assignment) and
+                    # HardConstraints.CityConstraints.meeting_constraint(schedule, assignment) and
                     HardConstraints.CityConstraints.special_bookings_constraint(schedule, assignment)
                 )
             else: # activity is a practice

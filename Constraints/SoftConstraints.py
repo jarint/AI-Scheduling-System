@@ -29,13 +29,13 @@ class SoftConstraints:
         delta_eval_pair = SoftConstraints.GeneralConstraints.pair(schedule, latest_assignment) * Environment.W_PAIR
         delta_eval_secdiff = SoftConstraints.check_city_constraint(schedule, latest_assignment) * Environment.W_SECDIFF
 
-        return sum(
+        return sum([
             delta_eval_minfilled_games,
             delta_eval_minfilled_practices,
             delta_eval_pref,
             delta_eval_pair,
             delta_eval_secdiff
-        )
+        ])
     
     
     class GeneralConstraints:
@@ -109,7 +109,7 @@ class SoftConstraints:
         age, tier, association = activity_obj.age, activity_obj.tier, activity_obj.association
         for act_id in schedule.assignments[slot_id]:
             act_obj = Environment.GAME_ID_TO_OBJ[act_id]
-            a, t, assoc = act_obj.age, act_obj.tier, act_obj.assoc
+            a, t, assoc = act_obj.age, act_obj.tier, act_obj.association
 
             # TODO not sure which implementation to use
             # implementation version 1

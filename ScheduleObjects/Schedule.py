@@ -16,10 +16,9 @@ class Schedule:
         self.assignments = {slot_id: set() for slot_id in Environment.ALL_SLOT_IDS}
         self.slot_of_each_activity = {} # maps from activity id to slot id to represent which slot each activity is scheduled to
         self.latest_assignment = None # (activity id, slot id)
-        self.remaining_games = [] # TODO: needs to initialized to be the entire set of games
-        self.remaining_practices = [] # TODO: needs to be initialized to be the entire set of practices
+        self.remaining_games = list(Environment.GAME_IDS) # TODO: needs to initialized to be the entire set of games
+        self.remaining_practices = list(Environment.PRACTICE_IDS) # TODO: needs to be initialized to be the entire set of practices
         self.eval = 0
-
     
     def get_copy(self):
         return copy.deepcopy(self)
@@ -33,7 +32,7 @@ class Schedule:
         """
         Assumes that the type of activity associated with 'activity_id' is of the same type as 'slot_id'
         """
-        activity_type = slot_id[0]
+        activity_type = Environment.ACTIVITY_ID_TO_OBJ[activity_id].ACTIVITY_TYPE
 
         if activity_type == ActivityType.GAME:
             self.assign_game(activity_id, slot_id)
@@ -51,6 +50,11 @@ class Schedule:
 
 
     def assign_practice(self, practice_id: str, slot_id: "tuple[ActivityType, Weekday, str]"):
+        # print("Practice: " + practice_id)
+        # print("Slot: " + str(slot_id))
+        # print("Remaining games: " + str(self.remaining_games))
+        # print("Remaining practices: " + str(self.remaining_practices))
+        # print()
         self.assignments[slot_id].add(practice_id)
         self.slot_of_each_activity[practice_id] = slot_id
         self.latest_assignment = (practice_id, slot_id)
