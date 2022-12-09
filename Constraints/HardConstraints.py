@@ -18,6 +18,11 @@ from Parser import Parser
 
 
 class HardConstraints:
+    general_fails = 0
+    city_fails = 0
+
+    evening_fails = 0
+    age_fails = 0
 
     @staticmethod
     def check_constraints(schedule: Schedule, assignment: tuple): # TODO: add type of 'assignment' parameter
@@ -28,10 +33,13 @@ class HardConstraints:
         if (not((activity_type == ActivityType.GAME) or (activity_type == ActivityType.PRACTICE))):
             raise TypeError("Activity given to 'check_constraints' method in HardConstraints must be either of type 'Game' or type 'Practice'")
 
-        return (
-            HardConstraints.GeneralConstraints.check_general_constraints(schedule, assignment) and
-            HardConstraints.CityConstraints.check_city_constraints(schedule, assignment)
-        )
+        general = HardConstraints.GeneralConstraints.check_general_constraints(schedule, assignment)
+        city = HardConstraints.CityConstraints.check_city_constraints(schedule, assignment)
+
+        if general: HardConstraints.general_fails = HardConstraints.general_fails + 1
+        if city: HardConstraints.city_fails = HardConstraints.city_fails + 1
+
+        return general and city
 
 
     # TODO: update all constraint check methods to use 'assignment' as second parameter instead of 'schedule.latest_assignment'

@@ -4,13 +4,14 @@ This is the driver class. It creates a scheduler object and accepts
 '''
 
 import logging
+import time
+import threading
 
 from Search.Environment import Environment
 from Scheduler import Scheduler
 from Parser import Parser
 from Printer import Printer
-import time
-import threading
+from Constraints.HardConstraints import HardConstraints
 
 # sample input: python main.py sample_input.txt 2 3 4 5 6 7 8 9
 
@@ -57,6 +58,8 @@ class Main:
                 Printer.print_schedule(Scheduler.current_best.pr)
             else:
                 print("No solution yet. Keep waiting!")
+            print("General fails: " + str(HardConstraints.general_fails / 1000000))
+            print("City fails: " + str(HardConstraints.city_fails / 1000000))
 
 if __name__ == "__main__":
     Main.main()
