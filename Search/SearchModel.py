@@ -19,8 +19,8 @@ class SearchModel:
 
         # Generating possible assignments for games
         for game_id in schedule.remaining_games:
-            for game_slot_id in Environment.GAME_SLOT_IDS:
-                assignment = (game_id, game_slot_id)
+            if game_id in Environment.SPECIAL_BOOKINGS:
+                assignment = (game_id, Environment.SPECIAL_BOOKINGS[game_id])
                 if HardConstraints.check_constraints(schedule, assignment):
                     assignments.append(assignment)
             else:
