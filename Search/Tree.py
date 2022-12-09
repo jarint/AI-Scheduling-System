@@ -68,7 +68,9 @@ class Node:
         self.children.append(Node(parent, pr, sol))
 
     def is_leaf(self):
-        return len(self.children) == 0
+        is_leaf = len(self.children) == 0
+        if is_leaf: Environment.leaves_encountered = Environment.leaves_encountered + 1
+        return is_leaf
 
 
 class Tree:
