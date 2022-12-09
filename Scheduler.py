@@ -9,6 +9,7 @@ from Parser import Parser
 from Search.Environment import Environment
 from Search.SearchModel import SearchModel
 from Search.Tree import Tree, Node
+from Printer import Printer
 
 
 class Scheduler:
@@ -25,25 +26,28 @@ class Scheduler:
     # start function internal methods start the search process
     @staticmethod
     def search():
+        print("Search has started.")
         while len(Scheduler.stack) > 0:
             # print("Stack size: " + str(len(Scheduler.stack)))
-
             node: Node = Scheduler.stack.pop()
 
-            # Checking if we update current best
-            if (node.sol == True):
-                if not(Scheduler.current_best == None):
-                    if node.pr.penalty < Scheduler.current_best.pr.penalty:
-                        Scheduler.current_best = node
-                        print(Scheduler.current_best.pr.assignments)
-                else:
-                    Scheduler.current_best = node
-                    print(Scheduler.current_best.pr.assignments)
-
+            total_activities = len(Environment.ACTIVITY_IDS)
+            remaining_activities = len(node.pr.remaining_games) + len(node.pr.remaining_practices)
+            print(total_activities - remaining_activities)
             
             # Adding children to node
             Scheduler.tree.expand(node)
             node.check_sol()
+
+            # Checking if we update current best
+            if (node.sol == True):
+                if not(Scheduler.current_best == None):
+                    if node.pr.eval < Scheduler.current_best.pr.eval:
+                        Scheduler.current_best = node
+                        # print(Scheduler.current_best.pr.assignments)
+                else:
+                    Scheduler.current_best = node
+                    # print(Scheduler.current_best.pr.assignments)
 
             # Sorting children in reverse order
             if len(node.children) > 0:
@@ -58,8 +62,3 @@ class Scheduler:
                 Scheduler.stack.append(child)
 
         return Scheduler.current_best
-
-
-
-
-
