@@ -1,31 +1,30 @@
-## Functional Requirements
-
-
-
 ## Software layout
 
-class: InputParameters
-- description: singleton instance stores all parsed input data and command-line arguments in appropriate data structures
-- constructor: invokes commandline_args() and parse_file()
-- private method: commandline_args() - pareses command line arguments
-- private method: parse_file(file) - parses file
 
-class: Env
-- stores the command line arguments for penalties
+main.py - driver code
+- invokes parser and then search
+
+
+class: Scheduler - employs the search process
+
+class: Printer - prints schedules
+
+class: Tree - tree where we can perform depth-first search
+
+class: Node - a node in the tree which stores a schedule
+
+class: Parser
+- description: singleton instance stores all parsed input data and command-line arguments in appropriate data structures
+- method: commandline_args() - pareses command line arguments
+- method: parse_file(file) - parses file
+
+class: Environment
+- stores all data from parsed file data and commandline arguments
 
 
 class: Schedule
-- var: mon_game_slots
-- var: tues_game_slots
-- var: mon_practice_slots 
-- var: tues_practice_slots
-- var: fri_practice_slots
-    - each of the above 5 variables is a hashmap from slot id to a set of game id's or practice id's, depending on the slot type. (each slot is an instance of the Slot class)
+- var: assignments - map from slot id to set of activity id's
 
-- var: game_assigned ? - hashmap from game id to slot
-- var: practice_assigned ? - hashmap from practice id to slot
-
-- currently_assigned(activity) - returns which slot a given activity is assigned to. This will be equal to $ if it isn't assigned anywhere.
 
 
 abstract class: Activity
@@ -43,20 +42,19 @@ class: Practice (subclass of Activity)
 - var: team
 
 
-class: Slot
+class: ActivitySlot (abstract class for GameSlot and PracticeSlot)
 - var: id
 
 
-class: SearchProcess ?
+class: GameSlot
+- represents a game slot and has an id
+
+class: PracticeSlot
+- represents a practice slot and has an id
 
 
-class: SearchModel ?
-
-
-class: Div ?
-
-
-class: Prob ?
+class: SearchModel
+- method: div
 
 
 class: HardConstraints
@@ -91,5 +89,9 @@ class: SoftConstraints
 - int method: preference(activity, slot)
 
 - int method: eval(schedule)
+
+
+Enumerations.py
+- enumerates weekdays and activity types
 
 
